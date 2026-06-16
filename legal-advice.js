@@ -1,65 +1,54 @@
 // api/legal-advice.js
-//
-// Serverless proxy for the Anthropic API.
-// Keeps the API key on the server — never exposed to the browser.
-//
-// Deploy this on Vercel:
-// 1. Push this whole project (including the /api folder) to GitHub.
-// 2. Import the repo on vercel.com.
-// 3. In Vercel project settings -> Environment Variables, add:
-//      ANTHROPIC_API_KEY = sk-ant-xxxxxxxx...
-// 4. Deploy. Vercel automatically turns this file into:
-//      https://your-project.vercel.app/api/legal-advice
+// Serverless proxy for OpenAI API (GPT-4o)
+// Add OPENAI_API_KEY in Vercel → Settings → Environment Variables
 
 export default async function handler(req, res) {
-  // Allow requests from any origin (adjust if you want to restrict later)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { query, system } = req.body || {};
-
   if (!query || typeof query !== 'string') {
     return res.status(400).json({ error: 'Missing "query" in request body' });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY configuration' });
+    return res.status(500).json({ error: 'Server is missing OPENAI_API_KEY configuration' });
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'gpt-4o',
         max_tokens: 1000,
-        system: system || '',
-        messages: [{ role: 'user', content: query }],
+        messages: [
+          { role: 'system', content: system || '' },
+          { role: 'user', content: query },
+        ],
       }),
     });
 
     const data = await response.json();
+    if (!response.ok) return res.status(response.status).json({ error: data });
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data });
-    }
+    // Convert OpenAI response format to match what app.js expects
+    // app.js reads: data.content[].text  (Anthropic format)
+    // OpenAI returns: data.choices[0].message.content
+    const text = data.choices?.[0]?.message?.content || '';
+    return res.status(200).json({
+      content: [{ type: 'text', text }]
+    });
 
-    return res.status(200).json(data);
   } catch (err) {
-    return res.status(500).json({ error: 'Failed to reach Anthropic API', details: String(err) });
+    return res.status(500).json({ error: 'Failed to reach OpenAI API', details: String(err) });
   }
 }
