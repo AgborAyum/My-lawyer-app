@@ -925,6 +925,26 @@ button, input, textarea, select { font-family: inherit; }
 </div>
 
 
+<!-- ═══════════════ SOCIAL BENEFITS MODAL ═══════════════ -->
+<div class="overlay" id="socialBenefitsOverlay" onclick="closeSocialBenefits(event)">
+  <div class="modal" style="max-height:92vh">
+    <div class="modal-handle"></div>
+    <h2 id="socialBenefitsTitle">🤲 Social Benefits — Cameroon</h2>
+    <p class="modal-sub" id="socialBenefitsSub">Government benefits and entitlements available to citizens and workers in Cameroon.</p>
+
+    <input class="form-input" id="socialBenefitsSearch" type="text"
+      placeholder="Search benefits... e.g. pension, maternity, family"
+      oninput="renderSocialBenefitsList(this.value)"
+      style="margin-bottom:14px" />
+
+    <div id="socialBenefitsCount" style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase"></div>
+
+    <div id="socialBenefitsList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto"></div>
+
+    <button class="cancel-btn" id="closeSocialBenefitsBtn" onclick="closeSocialBenefits()" style="margin-top:14px">Close</button>
+  </div>
+</div>
+
 <!-- ═══════════════ PENAL CODE MODAL ═══════════════ -->
 <div class="overlay" id="penalCodeOverlay" onclick="closePenalCode(event)">
   <div class="modal" style="max-height:92vh">
@@ -966,6 +986,10 @@ button, input, textarea, select { font-family: inherit; }
     <div class="drawer-item" onclick="toggleDrawer();openPenalCode()">
       <span class="icon">📖</span>
       <span class="label" id="drawer-penalcode-label">Penal Code</span>
+    </div>
+    <div class="drawer-item" onclick="toggleDrawer();openSocialBenefits()">
+      <span class="icon">🤲</span>
+      <span class="label" id="drawer-socialbenfits-label">Social Benefits</span>
     </div>
     <div class="drawer-item" onclick="toggleDrawer();navTo('services')">
       <span class="icon">🏛️</span>
@@ -1039,13 +1063,241 @@ const CATEGORIES = [
   { id:"other",    icon:"⚠️", name:"Other",             nameF:"Autre",               unit:"Autorités Compétentes" },
 ];
 
-// ── Medical facilities directory (sample data — expand with real listings by location)
+// ── Medical Facilities — CBC Health Services (Source: cbchealthservices.org)
 const MEDICAL_FACILITIES = [
-  { name:"Yaoundé Central Hospital", type:"Hospital", typeF:"Hôpital", region:"Centre Region", town:"Yaoundé", phone:"+237 222 23 40 20", email:"contact@hcy.cm" },
-  { name:"Douala General Hospital", type:"Hospital", typeF:"Hôpital", region:"Littoral Region", town:"Douala", phone:"+237 233 39 50 20", email:"contact@hgd.cm" },
-  { name:"Clinique de l'Aéroport", type:"Clinic", typeF:"Clinique", region:"Littoral Region", town:"Douala", phone:"+237 233 42 88 12", email:"info@clinique-aeroport.cm" },
-  { name:"Bamenda Regional Hospital", type:"Hospital", typeF:"Hôpital", region:"North West Region", town:"Bamenda", phone:"+237 233 36 11 09", email:"contact@brh.cm" },
-  { name:"SOS Médecins Cameroun", type:"Homecare / Ambulance", typeF:"Soins à domicile / Ambulance", region:"Centre Region", town:"Yaoundé", phone:"+237 233 43 19 19", email:"info@sosmedecins.cm" },
+
+  // ── NORTH WEST REGION
+  {
+    name: "Banso Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "North West Region", town: "Kumbo, Bui Division",
+    services: "General medicine, surgery, ophthalmology, ENT, gynaecology, obstetrics, paediatrics, dentistry, laboratory, X-ray & ultrasound, physiotherapy, TB treatment, HIV/AIDS, palliative care, community rehabilitation, family planning, PMTCT",
+    phone: "+237 677720005", phone2: "+237 678479628",
+    email: "bbh@cbchealthservices.org"
+  },
+  {
+    name: "Mbingo Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "North West Region", town: "Mbingo, Via Bamenda",
+    services: "General nursing, eye surgery (cataract, glaucoma), general & orthopaedic surgery, ENT surgery, internal medicine, dentistry, laboratory (24/7), pharmacy (24/7), physiotherapy & prosthetics, TB treatment, HIV/AIDS, community rehabilitation",
+    phone: "+237 677042705", phone2: "+237 677800681",
+    email: "mbingohb@yahoo.com"
+  },
+  {
+    name: "Nkwen Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "North West Region", town: "Bamenda",
+    services: "General medicine, surgery (including bariatric & orthopaedic), ophthalmology, dentistry, obstetrics & gynaecology, paediatrics, laboratory, physiotherapy, 24/7 emergency, antenatal clinic",
+    phone: "+237 675205729", phone2: "+237 683158210",
+    email: "nkwenbh@cbchealthservices.org"
+  },
+
+  // ── CENTRE REGION
+  {
+    name: "Etoug-Ebe Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "Centre Region", town: "Yaoundé VI",
+    services: "General medicine, obstetrics & gynaecology, cardiology, internal medicine, paediatrics, dentistry, laboratory (haematology, bacteriology, biochemistry, hormonal testing, TB), cervical cancer screening, antenatal clinic, blood donation, PMTCT",
+    phone: "+237 677187471",
+    email: "EBHY@cbchealthservices.org"
+  },
+  {
+    name: "Ekoumdoum Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "Centre Region", town: "Yaoundé (Ekoumdoum)",
+    services: "General medicine, dentistry, gynaecology, laboratory, pharmacy, outpatient consultations",
+    phone: "+237 222306227",
+    email: ""
+  },
+
+  // ── LITTORAL REGION
+  {
+    name: "Mboppi Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "Littoral Region", town: "Douala II (Mboppi, Wouri Division)",
+    services: "General medicine, surgery, cardiology, gynaecology, obstetrics, paediatrics, ophthalmology, dentistry, laboratory, pharmacy, outpatient & emergency services, HIV/AIDS, NCD care",
+    phone: "+237 677896106", phone2: "+237 675565894",
+    email: "mboppi@cbchealthservices.org"
+  },
+  {
+    name: "Bonaberi Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "Littoral Region", town: "Bonaberi, Douala (Grand Hanger, near Michelin)",
+    services: "General medicine, surgery, cardiology, paediatrics, dentistry, midwifery, laboratory, pharmacy, inpatient (74 beds)",
+    phone: "+237 676978217", phone2: "+237 672149686",
+    email: ""
+  },
+
+  // ── SOUTH WEST REGION
+  {
+    name: "Baptist Hospital Mutengene",
+    type: "Hospital", typeF: "Hôpital",
+    region: "South West Region", town: "Mutengene, Fako Division",
+    services: "General medicine, surgery, obstetrics & gynaecology, paediatrics, dentistry, laboratory, pharmacy, physiotherapy, outpatient & emergency services",
+    phone: "+237 777605430", phone2: "+237 777664284",
+    email: "bhm@cbchealthservices.org"
+  },
+  {
+    name: "Kumba Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "South West Region", town: "Kumba",
+    services: "General medicine, obstetrics, paediatrics, laboratory, pharmacy, outpatient & emergency services",
+    phone: "+237 675103020", phone2: "+237 678462544",
+    email: ""
+  },
+
+  // ── WEST REGION
+  {
+    name: "Bafoussam Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "West Region", town: "Bafoussam",
+    services: "General medicine, dentistry, obstetrics & gynaecology, laboratory, pharmacy, outpatient consultations",
+    phone: "+237 677633403",
+    email: ""
+  },
+  {
+    name: "Ngounso Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "West Region", town: "Magba Subdivision, Noun Division (60km north of Foumban)",
+    services: "General medicine, obstetrics, paediatrics, laboratory, outpatient services",
+    phone: "+237 651104705",
+    email: ""
+  },
+
+  // ── ADAMAWA REGION
+  {
+    name: "Baptist Hospital Banyo",
+    type: "Hospital", typeF: "Hôpital",
+    region: "Adamawa Region", town: "Banyo",
+    services: "General medicine, obstetrics & gynaecology, paediatrics, laboratory, pharmacy, outpatient & emergency services",
+    phone: "+237 677633403",
+    email: ""
+  },
+
+  // ── FAR NORTH REGION
+  {
+    name: "Meskine Baptist Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "Far North Region", town: "Maroua",
+    services: "General medicine, surgery, obstetrics & gynaecology, paediatrics, laboratory, pharmacy, outpatient & emergency services",
+    phone: "+237 677040003",
+    email: ""
+  },
+
+  // ── CBC Health Services General Contact (for any region)
+  {
+    name: "CBC Health Services — Director's Office",
+    type: "Head Office", typeF: "Siège Social",
+    region: "All Regions", town: "Bamenda (Head Office)",
+    services: "Referrals, general enquiries, and coordination for all CBC hospitals and health centers across Cameroon",
+    phone: "+237 677633403",
+    email: "samuelngum@cbchealthservices.org"
+  },
+
+  // ─────────────────────────────────────────────────────
+  // HEALTH CENTRES — with confirmed contact information
+  // (Source: cbchealthservices.org)
+  // ─────────────────────────────────────────────────────
+
+  // ── NORTH WEST REGION
+  {
+    name: "Akeh Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "North West Region", town: "Akeh, Fundong Sub-Division, Boyo Division",
+    services: "General consultation, maternity, pharmacy, laboratory, outpatient & inpatient services",
+    phone: "+237 674546882", phone2: "+237 666508021",
+    email: ""
+  },
+  {
+    name: "Bangolan Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "North West Region", town: "Babessi Sub-Division, Ngoketunjia Division (13km from Babessi)",
+    services: "General medicine, maternity, inpatient (100+ beds), 24/7, outpatient consultations, pharmacy",
+    phone: "+237 655972769", phone2: "+237 677002080",
+    email: "bangolanhc@cbchealthservices.org"
+  },
+  {
+    name: "Lassin Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "North West Region", town: "Lassin Village, Noni Sub-Division, Bui Division",
+    services: "General consultation, community health, sensitization, vaccination",
+    phone: "+237 677178190", phone2: "+237 655978737",
+    email: ""
+  },
+  {
+    name: "Ndu Baptist Hospital",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "North West Region", town: "Ndu",
+    services: "Outpatient & inpatient services, wound dressing, minor surgery (circumcision), maternity, men/women/children wards",
+    phone: "+237 676379938",
+    email: ""
+  },
+
+  // ── SOUTH WEST REGION
+  {
+    name: "Ekondo Titi Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "South West Region", town: "Ekondo Titi",
+    services: "General consultation, maternity, laboratory, pharmacy, outpatient services (eye, dental & physiotherapy planned)",
+    phone: "+237 750066190", phone2: "+237 650419874",
+    email: ""
+  },
+
+  // ── CENTRE REGION
+  {
+    name: "Voundou Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "Centre Region", town: "Voundou (c/o Etoug-Ebe Baptist Hospital, Yaoundé)",
+    services: "General medicine, 24/7, doctor on site, averages 1,000 patients/month",
+    phone: "+237 675356777", phone2: "+237 652292687",
+    email: ""
+  },
+  {
+    name: "Nkoabang Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "Centre Region", town: "Nkoabang Village, Nkolafamba Sub-Division, Mfou Division (Yaoundé IV)",
+    services: "General medicine, malaria, hypertension, diabetes, STIs, typhoid, blood transfusion, 24/7, 3 doctors on site",
+    phone: "+237 677633403",
+    email: ""
+  },
+
+  // ── SOUTH REGION
+  {
+    name: "Baptist Health Centre Kribi",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "South Region", town: "Kribi, Carrifour Django, Ocean Division",
+    services: "General consultation, laboratory, pharmacy, maternity (ANC, inpatient), women's health, family planning, eye care, dental care, physiotherapy, nutrition, 24/7",
+    phone: "+237 675466384",
+    email: "mosekiyolukong@gmail.com"
+  },
+
+  // ── WEST REGION
+  {
+    name: "Bayangam Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "West Region", town: "Bayangam",
+    services: "General medicine, maternity, pharmacy, outpatient consultations",
+    phone: "+237 676640920",
+    email: "bayangambhc2008@yahoo.com"
+  },
+
+  // ── ADAMAWA REGION
+  {
+    name: "Allat Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "Adamawa Region", town: "Allat",
+    services: "General medicine, maternity, pharmacy, outpatient consultations",
+    phone: "+237 679201982", phone2: "+237 670673922",
+    email: ""
+  },
+  {
+    name: "Tibati Baptist Health Centre",
+    type: "Health Centre", typeF: "Centre de Santé",
+    region: "Adamawa Region", town: "Tibati",
+    services: "General medicine, maternity, pharmacy, outpatient consultations",
+    phone: "+237 670535860",
+    email: "ngumrobert@gmail.com"
+  },
 ];
 
 // ── Services Directory
@@ -1063,6 +1315,239 @@ const ID_LABELS = {
   "Passport": ["Passport Number","Enter your Passport number"],
   "Driver's Licence": ["Driver's Licence Number","Enter your Driver's Licence number"]
 };
+
+// ═══════════════════════════════════════════════════════
+// SOCIAL BENEFITS — Government entitlements in Cameroon
+// Source: CNPS (cnps.cm), Labour Code, ILO, SSA records
+// ═══════════════════════════════════════════════════════
+const SOCIAL_BENEFITS = [
+
+  // ── CATEGORY 1: CNPS FAMILY BENEFITS
+  {
+    category: "Family Benefits",
+    categoryF: "Prestations Familiales",
+    icon: "👨‍👩‍👧‍👦",
+    title: "Family Allowances (Allocations Familiales)",
+    titleF: "Allocations Familiales",
+    who: "Salaried workers in the private sector registered with CNPS, earning at least the SMIG (min. FCFA 60,000/month) and working at least 18 days or 120 hours/month. Also: pensioners who received family allowances at retirement, and surviving spouses.",
+    whoF: "Travailleurs salariés du secteur privé affiliés à la CNPS, gagnant au moins le SMIG (60 000 FCFA/mois) et travaillant au moins 18 jours ou 120 heures/mois. Aussi: pensionnés et conjoint(e)s survivants.",
+    what: "Monthly cash allowance paid per dependent child. Amount was increased by over 60% during COVID-19 support measures.",
+    whatF: "Allocation mensuelle versée par enfant à charge.",
+    howTo: "Register with CNPS through your employer. Employer must affiliate you within 8 days of hiring. File your child's birth certificate and family book at any CNPS office.",
+    howToF: "S'inscrire à la CNPS via l'employeur. L'employeur doit vous affilier dans les 8 jours suivant l'embauche. Déposer l'acte de naissance de l'enfant et le livret de famille dans tout bureau CNPS.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+  {
+    category: "Family Benefits",
+    categoryF: "Prestations Familiales",
+    icon: "🤰",
+    title: "Prenatal & Maternity Allowances",
+    titleF: "Allocations Prénatales et de Maternité",
+    who: "Pregnant salaried women registered with CNPS. Free medical care for pregnant women is also provided in government health facilities.",
+    whoF: "Femmes salariées enceintes affiliées à la CNPS. Des soins médicaux gratuits sont également disponibles dans les établissements de santé publics.",
+    what: "Cash benefit during pregnancy and maternity leave (14 weeks minimum — 4 weeks before and 10 weeks after birth). Coverage of maternity-related medical expenses. Daily maternity allowance during leave period.",
+    whatF: "Indemnité journalière pendant le congé de maternité (14 semaines minimum). Prise en charge des frais médicaux liés à la maternité.",
+    howTo: "Notify your employer and CNPS of your pregnancy. Obtain a medical certificate from a doctor. File maternity leave form at the CNPS office in your area.",
+    howToF: "Informer l'employeur et la CNPS de la grossesse. Obtenir un certificat médical. Déposer le formulaire de congé maternité au bureau CNPS de votre zone.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+
+  // ── CATEGORY 2: OLD AGE, INVALIDITY & DEATH
+  {
+    category: "Old Age & Retirement",
+    categoryF: "Vieillesse & Retraite",
+    icon: "👴",
+    title: "Old-Age Retirement Pension",
+    titleF: "Pension de Vieillesse",
+    who: "Workers registered with CNPS who: (1) have reached retirement age (60 years for most workers; 55 for certain categories), AND (2) have made at least 180 months (15 years) of contributions to CNPS. Civil servants have a separate scheme.",
+    whoF: "Travailleurs affiliés à la CNPS ayant atteint l'âge de retraite (60 ans) et cotisé pendant au moins 180 mois (15 ans). Les fonctionnaires ont un régime séparé.",
+    what: "Monthly pension calculated based on total years of contribution and average salary. Pensions were increased by 20% during COVID-19 measures, and by 5% from January 1, 2020.",
+    whatF: "Pension mensuelle calculée selon les années de cotisation et le salaire moyen. Augmentée de 5% depuis le 1er janvier 2020.",
+    howTo: "Apply at least 6 months before your expected retirement date. Required documents: CNPS card, national ID, birth certificate, employment booklet (carnet de travail), medical certificate, salary slips for last 3 years. Submit at your local CNPS office.",
+    howToF: "Déposer la demande au moins 6 mois avant la date de retraite prévue. Documents: carte CNPS, CNI, acte de naissance, carnet de travail, certificat médical, fiches de salaire des 3 dernières années. À déposer au bureau CNPS local.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+  {
+    category: "Old Age & Retirement",
+    categoryF: "Vieillesse & Retraite",
+    icon: "⚡",
+    title: "Early Retirement Pension",
+    titleF: "Pension de Retraite Anticipée",
+    who: "Workers registered with CNPS who are at least 50 years old and have become permanently incapable of working due to deterioration of physical or mental capacity.",
+    whoF: "Travailleurs affiliés à la CNPS, âgés d'au moins 50 ans et devenus définitivement incapables de travailler.",
+    what: "Monthly pension granted before the normal retirement age when a worker can no longer perform their work due to health reasons, assessed by a CNPS medical adviser.",
+    whatF: "Pension mensuelle accordée avant l'âge normal de retraite pour raisons de santé, après évaluation par le médecin conseil de la CNPS.",
+    howTo: "Apply at a CNPS office with: national ID, CNPS card, medical certificate establishing incapacity, employment booklet, and salary slips.",
+    howToF: "Déposer une demande au bureau CNPS avec: CNI, carte CNPS, certificat médical établissant l'incapacité, carnet de travail et fiches de salaire.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+  {
+    category: "Invalidity",
+    categoryF: "Invalidité",
+    icon: "♿",
+    title: "Disability (Invalidity) Pension",
+    titleF: "Pension d'Invalidité",
+    who: "Insured workers who: (1) have been registered with CNPS for at least 5 years; (2) completed 6 months of insurance in the 12 months before the onset of incapacity; (3) suffer a disability that reduces earning capacity to less than 1/3 of normal; and (4) became disabled before age 60.",
+    whoF: "Travailleurs affiliés à la CNPS depuis au moins 5 ans, ayant cotisé 6 mois dans les 12 mois précédant l'incapacité, et dont la capacité de gain est réduite à moins d'1/3 du normal, avant 60 ans.",
+    what: "Monthly pension for workers who become permanently disabled and cannot earn sufficient income. Disability must be certified by the CNPS medical adviser.",
+    whatF: "Pension mensuelle pour les travailleurs devenus définitivement invalides, certifiée par le médecin conseil de la CNPS.",
+    howTo: "File a claim at the CNPS office with: national ID, CNPS card, medical report from a certified doctor, employment history, and salary documents.",
+    howToF: "Déposer un dossier au bureau CNPS avec: CNI, carte CNPS, rapport médical d'un médecin agréé, historique d'emploi et documents de salaire.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+  {
+    category: "Death Benefits",
+    categoryF: "Prestations Décès",
+    icon: "🪦",
+    title: "Survivor's Pension & Death Grant",
+    titleF: "Pension de Survivant & Capital Décès",
+    who: "Spouse and dependent children of a CNPS-registered worker who dies either while in active service or after retirement.",
+    whoF: "Conjoint(e) et enfants à charge d'un travailleur affilié à la CNPS décédé en activité ou après la retraite.",
+    what: "A monthly survivor's pension paid to the widow/widower and dependent children, calculated based on the deceased worker's salary and length of service. A one-time death grant (capital décès) is also paid to cover funeral costs.",
+    whatF: "Pension mensuelle de survie versée au conjoint et aux enfants à charge, calculée sur le salaire et les années de service du défunt. Un capital décès forfaitaire est également versé pour les frais funéraires.",
+    howTo: "File a claim at any CNPS office within 3 months of the death. Required documents: death certificate, marriage certificate, birth certificates of children, CNPS card of the deceased, and national IDs.",
+    howToF: "Déposer un dossier dans tout bureau CNPS dans les 3 mois suivant le décès. Documents: acte de décès, acte de mariage, actes de naissance des enfants, carte CNPS du défunt, CNI.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+
+  // ── CATEGORY 3: OCCUPATIONAL RISKS
+  {
+    category: "Work Accidents & Occupational Diseases",
+    categoryF: "Accidents du Travail & Maladies Professionnelles",
+    icon: "⚠️",
+    title: "Occupational Accident & Disease Benefits",
+    titleF: "Prestations Accidents du Travail",
+    who: "All workers registered with CNPS who suffer an accident at the workplace or while commuting to/from work, or who develop a recognized occupational disease.",
+    whoF: "Tout travailleur affilié à la CNPS victime d'un accident du travail ou d'un accident de trajet, ou atteint d'une maladie professionnelle reconnue.",
+    what: "Coverage includes: full medical treatment costs (hospitalization, surgery, medication, rehabilitation), daily cash allowance during temporary incapacity, permanent disability pension if the injury leaves lasting effects, and survivor's pension for dependants if the accident is fatal.",
+    whatF: "Couverture: frais médicaux complets (hospitalisation, chirurgie, médicaments, rééducation), indemnité journalière pendant l'incapacité temporaire, rente d'invalidité permanente si séquelles, et rente de survie pour les ayants droit en cas de décès.",
+    howTo: "Report the accident to your employer IMMEDIATELY. The employer must declare it to the Labour Inspectorate and CNPS within 48 hours. Obtain a medical certificate. Keep all medical receipts. File a CNPS claim with: accident report, employer declaration, medical certificates, and your CNPS card.",
+    howToF: "Déclarer l'accident à l'employeur IMMÉDIATEMENT. L'employeur doit le déclarer à l'Inspecteur du Travail et à la CNPS dans les 48 heures. Obtenir un certificat médical. Conserver toutes les factures médicales. Déposer un dossier CNPS avec: constat d'accident, déclaration de l'employeur, certificats médicaux et carte CNPS.",
+    contact: "CNPS: +237 222 22 56 01 | www.cnps.cm",
+    expanded: false
+  },
+
+  // ── CATEGORY 4: EDUCATION
+  {
+    category: "Education",
+    categoryF: "Éducation",
+    icon: "📚",
+    title: "Free Primary Education",
+    titleF: "Éducation Primaire Gratuite",
+    who: "All children of school age in Cameroon. Primary schooling has been free since 2000 under government policy.",
+    whoF: "Tous les enfants en âge scolaire au Cameroun. La scolarité primaire est gratuite depuis 2000.",
+    what: "Free tuition at all public primary schools. Parents are not required to pay school fees, though they may be asked to contribute to certain materials or uniforms.",
+    whatF: "Scolarité gratuite dans toutes les écoles primaires publiques. Les parents ne paient pas de frais de scolarité, bien que des contributions pour le matériel ou les uniformes puissent être demandées.",
+    howTo: "Enroll your child at the nearest public primary school. Bring a birth certificate and vaccination card. Contact your local delegation of MINEDUB (Ministry of Basic Education) for the nearest school.",
+    howToF: "Inscrire l'enfant à l'école primaire publique la plus proche. Apporter l'acte de naissance et le carnet de vaccination. Contacter la délégation locale du MINEDUB.",
+    contact: "MINEDUB: +237 222 22 92 02 | www.minedub.cm",
+    expanded: false
+  },
+  {
+    category: "Education",
+    categoryF: "Éducation",
+    icon: "🎓",
+    title: "Government Scholarships & Bursaries",
+    titleF: "Bourses d'État",
+    who: "Cameroonian students of academic merit enrolled in state secondary schools, higher education institutions, or seeking to study abroad. Criteria vary by year and institution.",
+    whoF: "Étudiants camerounais méritants inscrits dans des établissements secondaires ou d'enseignement supérieur publics, ou souhaitant étudier à l'étranger.",
+    what: "Government bursaries (bourses d'État) to help students cover tuition and living costs. Also covers bilateral scholarships with foreign countries for studies abroad. Scholarships for students with disabilities and those from disadvantaged backgrounds.",
+    whatF: "Bourses d'État pour aider les étudiants à couvrir les frais de scolarité et de subsistance. Bourses bilatérales avec des pays étrangers pour les études à l'étranger. Bourses pour les étudiants en situation de handicap.",
+    howTo: "Apply through your school or university to the nearest delegation of MINESUP (Ministry of Higher Education) or MINESEC (Ministry of Secondary Education). Applications are usually open at the start of each academic year. Check official ministry websites for announcements.",
+    howToF: "Déposer une demande via votre établissement auprès de la délégation la plus proche du MINESUP ou MINESEC. Les demandes sont généralement ouvertes en début d'année académique.",
+    contact: "MINESUP: +237 222 22 91 44 | MINESEC: +237 222 23 55 12",
+    expanded: false
+  },
+
+  // ── CATEGORY 5: HEALTH
+  {
+    category: "Health",
+    categoryF: "Santé",
+    icon: "🏥",
+    title: "Free Maternal & Child Healthcare",
+    titleF: "Soins de Santé Maternelle et Infantile Gratuits",
+    who: "Pregnant women and children under 5 years old in Cameroon, regardless of employment status or CNPS registration.",
+    whoF: "Femmes enceintes et enfants de moins de 5 ans au Cameroun, quel que soit le statut d'emploi ou l'affiliation à la CNPS.",
+    what: "Free antenatal consultations, deliveries, and post-natal care at government health facilities. Free childhood vaccinations (EPI programme). Free treatment for malaria in children under 5.",
+    whatF: "Consultations prénatales, accouchements et soins post-natals gratuits dans les structures de santé publiques. Vaccination infantile gratuite (PEV). Traitement gratuit du paludisme pour les enfants de moins de 5 ans.",
+    howTo: "Visit any government health centre or district hospital. Bring your national ID and a pregnancy record (carnet de grossesse) for maternity care. Vaccination is done at health centres and hospitals free of charge.",
+    howToF: "Se rendre dans tout centre de santé ou hôpital de district public. Apporter la CNI et le carnet de grossesse pour les soins de maternité. La vaccination est gratuite dans les centres de santé.",
+    contact: "MINSANTE: +237 222 22 22 01 | www.minsante.cm",
+    expanded: false
+  },
+
+  // ── CATEGORY 6: PERSONS WITH DISABILITIES
+  {
+    category: "Disability Rights",
+    categoryF: "Droits des Personnes Handicapées",
+    icon: "♿",
+    title: "Rights & Benefits for Persons with Disabilities",
+    titleF: "Droits des Personnes Handicapées",
+    who: "All persons with physical, mental, or sensory disabilities residing in Cameroon. Law No. 83/013 of 21 July 1983 establishes the legal framework for protection of persons with disabilities.",
+    whoF: "Toutes les personnes handicapées physiques, mentales ou sensorielles résidant au Cameroun, conformément à la Loi n° 83/013 du 21 juillet 1983.",
+    what: "Entitlements include: priority access to public services, free or reduced-cost healthcare, access to adapted education, vocational rehabilitation and training, priority in public housing allocation, and exemption from certain taxes.",
+    whatF: "Droits: accès prioritaire aux services publics, soins de santé gratuits ou à tarif réduit, accès à l'éducation adaptée, réadaptation professionnelle, priorité dans l'attribution de logements sociaux, exonération de certaines taxes.",
+    howTo: "Obtain a disability certificate (certificat d'invalidité) from a certified medical doctor, validated by the Ministry of Social Affairs (MINAS). Register with your local MINAS delegation to access available services and benefits.",
+    howToF: "Obtenir un certificat d'invalidité auprès d'un médecin agréé, validé par le Ministère des Affaires Sociales (MINAS). S'inscrire auprès de la délégation MINAS locale pour accéder aux services et prestations disponibles.",
+    contact: "MINAS: +237 222 22 40 78 | www.minas.cm",
+    expanded: false
+  },
+
+  // ── CATEGORY 7: LABOUR RIGHTS AS BENEFITS
+  {
+    category: "Labour Rights",
+    categoryF: "Droits du Travail",
+    icon: "👷",
+    title: "Annual Leave & Paid Leave Entitlements",
+    titleF: "Congé Annuel Payé",
+    who: "All salaried workers under a formal employment contract in Cameroon, as defined by the 1992 Labour Code.",
+    whoF: "Tout travailleur salarié sous contrat de travail au Cameroun, selon le Code du Travail de 1992.",
+    what: "Minimum 24 working days of paid annual leave per year. Additional leave days for workers with dependants. Maternity leave of at least 14 weeks (paid). Sick leave (paid, subject to medical certificate). Public holidays (paid).",
+    whatF: "Minimum de 24 jours ouvrables de congé annuel payé par an. Congé maternité d'au moins 14 semaines (payé). Congé maladie (payé, sur présentation d'un certificat médical). Jours fériés (payés).",
+    howTo: "These are automatic rights under the Labour Code. If your employer does not grant them, file a complaint with the Labour Inspector (Inspecteur du Travail) in your area.",
+    howToF: "Ce sont des droits automatiques selon le Code du Travail. Si l'employeur ne les accorde pas, déposer une plainte auprès de l'Inspecteur du Travail de votre zone.",
+    contact: "MINTSS (Ministry of Labour): +237 222 22 03 90",
+    expanded: false
+  },
+  {
+    category: "Labour Rights",
+    categoryF: "Droits du Travail",
+    icon: "💰",
+    title: "Minimum Wage (SMIG) Protection",
+    titleF: "Salaire Minimum (SMIG)",
+    who: "All salaried workers in Cameroon.",
+    whoF: "Tout travailleur salarié au Cameroun.",
+    what: "The SMIG (Salaire Minimum Interprofessionnel Garanti) is the legally guaranteed minimum wage. As of 2024: FCFA 60,000/month for most sectors, and FCFA 45,000/month for the agricultural sector. No employer can legally pay below this amount.",
+    whatF: "Le SMIG est le salaire minimum légal. En 2024: 60 000 FCFA/mois pour la plupart des secteurs, et 45 000 FCFA/mois pour le secteur agricole. Aucun employeur ne peut légalement payer en dessous de ce montant.",
+    howTo: "If you are paid below the SMIG, report your employer to the Labour Inspector (Inspecteur du Travail) in your area. You can also contact MINTSS (Ministry of Labour) for guidance.",
+    howToF: "Si vous êtes payé en dessous du SMIG, signalez votre employeur à l'Inspecteur du Travail de votre zone ou contactez le MINTSS.",
+    contact: "MINTSS: +237 222 22 03 90 | www.mintss.gov.cm",
+    expanded: false
+  },
+
+  // ── CATEGORY 8: HOUSING
+  {
+    category: "Housing",
+    categoryF: "Logement",
+    icon: "🏠",
+    title: "Social Housing (SIC) — Low-Cost Housing",
+    titleF: "Logements Sociaux (SIC)",
+    who: "Low and middle-income Cameroonian citizens who cannot afford private housing on the open market. Priority given to civil servants and formal sector workers.",
+    whoF: "Citoyens camerounais à revenus faibles ou moyens ne pouvant pas accéder au marché privé du logement. Priorité aux fonctionnaires et travailleurs du secteur formel.",
+    what: "The Société Immobilière du Cameroun (SIC) provides affordable social housing across the country, including rental and rent-to-own options. Units are subsidised below market rates.",
+    whatF: "La Société Immobilière du Cameroun (SIC) propose des logements sociaux abordables à travers le pays, en location ou en accession à la propriété à des tarifs subventionnés.",
+    howTo: "Apply directly to SIC regional offices in your city. Provide proof of income, national ID, and employment certificate. Contact the nearest SIC office for availability of units.",
+    howToF: "Faire une demande directement aux agences régionales de la SIC dans votre ville. Fournir une preuve de revenus, CNI et certificat d'emploi.",
+    contact: "SIC: +237 222 22 49 69 | www.sic.cm",
+    expanded: false
+  },
+];
 
 /* ═══════════════════════════════════════════════════════
    MyLawyer — Main Application Logic
@@ -1304,9 +1789,10 @@ function renderMedicalFacilities() {
     <div class="medical-facility-card">
       <div class="medical-facility-name">${escapeHtml(f.name)}</div>
       <div class="medical-facility-meta">${t ? f.typeF : f.type} · ${escapeHtml(f.town)}</div>
+      ${f.services ? `<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">${escapeHtml(f.services)}</div>` : ''}
       <div class="medical-facility-contact-row">
         <button class="unit-call" onclick="window.location.href='tel:${f.phone.replace(/\s/g,'')}'">📞 ${f.phone}</button>
-        <button class="unit-email" onclick="window.location.href='mailto:${f.email}'">✉️ ${t ? "Email" : "Email"}</button>
+        ${f.email ? `<button class="unit-email" onclick="window.location.href='mailto:${f.email}'">✉️ Email</button>` : (f.phone2 ? `<button class="unit-call" onclick="window.location.href='tel:${f.phone2.replace(/\s/g,'')}'">📞 ${f.phone2}</button>` : '')}
       </div>
     </div>
   `).join('');
@@ -1350,6 +1836,93 @@ function submitIncident() {
   console.log("REPORT:", report);
   alert(t ? "✅ Signalement transmis. Restez en sécurité." : "✅ Report submitted. Keep safe.");
   closeOverlay('incidentOverlay');
+}
+
+
+// ─────────────────────────────────────────────
+// SOCIAL BENEFITS
+// ─────────────────────────────────────────────
+let expandedBenefit = null;
+
+function openSocialBenefits() {
+  document.getElementById('socialBenefitsSearch').value = '';
+  expandedBenefit = null;
+  renderSocialBenefitsList('');
+  openOverlay('socialBenefitsOverlay');
+}
+function closeSocialBenefits(evt) { closeOverlay('socialBenefitsOverlay', evt); }
+
+function renderSocialBenefitsList(query) {
+  const t = state.lang === 'FR';
+  const list = document.getElementById('socialBenefitsList');
+  const countEl = document.getElementById('socialBenefitsCount');
+
+  let items = SOCIAL_BENEFITS;
+  if (query && query.trim()) {
+    const q = query.toLowerCase();
+    items = SOCIAL_BENEFITS.filter(b =>
+      (b.title + ' ' + b.titleF + ' ' + b.what + ' ' + b.category + ' ' + b.who).toLowerCase().includes(q)
+    );
+  }
+
+  countEl.textContent = items.length + ' ' + (t ? 'prestations trouvées' : 'benefits found') +
+    (query ? '' : (' ' + (t ? 'au total' : 'in total')));
+
+  if (items.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">' +
+      (t ? 'Aucune prestation trouvée.' : 'No benefits found.') + '</p>';
+    return;
+  }
+
+  list.innerHTML = items.map((b, i) => {
+    const idx = SOCIAL_BENEFITS.indexOf(b);
+    const isOpen = expandedBenefit === idx;
+    const title = t ? b.titleF : b.title;
+    const cat = t ? b.categoryF : b.category;
+    return '<div style="background:#f8fbf9;border:1px solid var(--border);border-radius:14px;overflow:hidden">' +
+      '<div onclick="toggleBenefit(' + idx + ')" style="padding:14px;cursor:pointer">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
+          '<span style="font-size:18px">' + b.icon + '</span>' +
+          '<span style="font-size:16px;color:var(--muted)">' + (isOpen ? '−' : '+') + '</span>' +
+        '</div>' +
+        '<div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + escapeHtml(cat) + '</div>' +
+        '<div style="font-size:14px;font-weight:700;color:var(--green)">' + escapeHtml(title) + '</div>' +
+      '</div>' +
+      (isOpen ? (
+        '<div style="padding:0 14px 14px;border-top:1px solid var(--border)">' +
+          '<div style="margin-top:12px">' +
+            '<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' +
+              (t ? 'QUI PEUT EN BÉNÉFICIER' : 'WHO QUALIFIES') +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">' + escapeHtml(t ? b.whoF : b.who) + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' +
+              (t ? 'CE QUE VOUS RECEVEZ' : 'WHAT YOU GET') +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">' + escapeHtml(t ? b.whatF : b.what) + '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' +
+              (t ? 'COMMENT FAIRE LA DEMANDE' : 'HOW TO APPLY') +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">' + escapeHtml(t ? b.howToF : b.howTo) + '</div>' +
+          '</div>' +
+          '<div style="background:#eff8f3;border:1px solid var(--border);border-radius:10px;padding:8px 12px">' +
+            '<div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">' +
+              (t ? 'CONTACT' : 'CONTACT') +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--green);font-weight:600">' + escapeHtml(b.contact) + '</div>' +
+          '</div>' +
+        '</div>'
+      ) : '') +
+    '</div>';
+  }).join('');
+}
+
+function toggleBenefit(idx) {
+  expandedBenefit = expandedBenefit === idx ? null : idx;
+  renderSocialBenefitsList(document.getElementById('socialBenefitsSearch').value);
 }
 
 // ─────────────────────────────────────────────
@@ -1730,6 +2303,18 @@ function renderApp() {
   document.getElementById('skipProfile').textContent = t ? "Passer pour l'instant" : "Skip for now";
 
   // Penal Code modal
+  document.getElementById('drawer-socialbenfits-label').textContent = t ? "Prestations Sociales" : "Social Benefits";
+  document.getElementById('socialBenefitsTitle').textContent = "🤲 " + (t ? "Prestations Sociales — Cameroun" : "Social Benefits — Cameroon");
+  document.getElementById('socialBenefitsSub').textContent = t
+    ? "Prestations et droits gouvernementaux disponibles pour les citoyens et travailleurs au Cameroun."
+    : "Government benefits and entitlements available to citizens and workers in Cameroon.";
+  document.getElementById('socialBenefitsSearch').placeholder = t
+    ? "Rechercher... ex: pension, maternité, famille"
+    : "Search benefits... e.g. pension, maternity, family";
+  document.getElementById('closeSocialBenefitsBtn').textContent = t ? "Fermer" : "Close";
+  if (document.getElementById('socialBenefitsOverlay').classList.contains('open')) {
+    renderSocialBenefitsList(document.getElementById('socialBenefitsSearch').value);
+  }
   document.getElementById('penalCodeTitle').textContent = "📖 " + (t ? "Code Pénal du Cameroun" : "Cameroon Penal Code");
   document.getElementById('penalCodeSub').textContent = t
     ? "Loi N° 2016/007 du 12 juillet 2016 — parcourez ou recherchez toutes les sections."
