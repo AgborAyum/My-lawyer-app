@@ -1054,13 +1054,13 @@ const CATEGORIES = [
   { id:"kidnap",   icon:"👶", name:"Kidnapping",         nameF:"Enlèvement",          unit:"Police Judiciaire" },
   { id:"missing",  icon:"🔍", name:"Missing Person",     nameF:"Personne Disparue",   unit:"Police Judiciaire" },
   { id:"flood",    icon:"🌊", name:"Flood",              nameF:"Inondation",          unit:"Protection Civile" },
-  { id:"landslide",icon:"⛰️", name:"Landslide",          nameF:"Glissement de Terrain", unit:"Protection Civile" },
+  { id:"landslide",icon:"⛰", name:"Landslide",          nameF:"Glissement de Terrain", unit:"Protection Civile" },
   { id:"earthquake",icon:"🌍", name:"Earthquake",        nameF:"Tremblement de Terre", unit:"Protection Civile" },
   { id:"domestic", icon:"🏠", name:"Domestic Violence",  nameF:"Violence Domestique", unit:"Brigade Sociale" },
   { id:"rights",   icon:"✊", name:"Human Rights",       nameF:"Droits de l'Homme",   unit:"CNDHL / REDHAC" },
   { id:"accident", icon:"🚗", name:"Road Accident",      nameF:"Accident de Route",   unit:"Gendarmerie Nationale" },
   { id:"drugs",    icon:"💊", name:"Drug Abuse",         nameF:"Abus de Drogues",     unit:"DGSN / MINSANTE" },
-  { id:"other",    icon:"⚠️", name:"Other",             nameF:"Autre",               unit:"Autorités Compétentes" },
+  { id:"other",    icon:"⚠", name:"Other",             nameF:"Autre",               unit:"Autorités Compétentes" },
 ];
 
 // ── Medical Facilities — CBC Health Services (Source: cbchealthservices.org)
@@ -1302,10 +1302,10 @@ const MEDICAL_FACILITIES = [
 
 // ── Services Directory
 const SERVICES = [
-  { icon:"🏛️", title:"Government Offices",    titleF:"Bureaux Gouvernementaux", desc:"Préfet, S.D.O., Mayor, CVUC, Tribunals — with requirements and contacts.", descF:"Préfet, S.D.O., Maire — avec conditions et contacts." },
+  { icon:"🏛", title:"Government Offices",    titleF:"Bureaux Gouvernementaux", desc:"Préfet, S.D.O., Mayor, CVUC, Tribunals — with requirements and contacts.", descF:"Préfet, S.D.O., Maire — avec conditions et contacts." },
   { icon:"✊", title:"Human Rights Orgs",      titleF:"ONG des Droits de l'Homme", desc:"CNDHL, REDHAC, Mandela Center, HRW Cameroon, Nouveaux Droits de l'Homme.", descF:"CNDHL, REDHAC, Mandela Center, HRW Cameroun." },
   { icon:"🌿", title:"Environment & Land",     titleF:"Environnement & Foncier", desc:"MINFOF, CED, land rights advocacy groups and environmental civil societies.", descF:"MINFOF, CED, groupes de défense des droits fonciers." },
-  { icon:"⚖️", title:"Legal Aid Centres",      titleF:"Centres d'Aide Juridique", desc:"Free or subsidised legal assistance offices across Cameroon.", descF:"Assistance juridique gratuite ou subventionnée à travers le Cameroun." },
+  { icon:"⚖", title:"Legal Aid Centres",      titleF:"Centres d'Aide Juridique", desc:"Free or subsidised legal assistance offices across Cameroon.", descF:"Assistance juridique gratuite ou subventionnée à travers le Cameroun." },
   { icon:"🤝", title:"Counselors",             titleF:"Conseillers", desc:"Marriage & Civil Status Counselors, Mental Health Counselors, Family Mediators.", descF:"Conseillers en mariage, en santé mentale et médiateurs familiaux." },
 ];
 
@@ -1326,7 +1326,7 @@ const SOCIAL_BENEFITS = [
   {
     category: "Family Benefits",
     categoryF: "Prestations Familiales",
-    icon: "👨‍👩‍👧‍👦",
+    icon: "👪",
     title: "Family Allowances (Allocations Familiales)",
     titleF: "Allocations Familiales",
     who: "Salaried workers in the private sector registered with CNPS, earning at least the SMIG (min. FCFA 60,000/month) and working at least 18 days or 120 hours/month. Also: pensioners who received family allowances at retirement, and surviving spouses.",
@@ -1403,7 +1403,7 @@ const SOCIAL_BENEFITS = [
   {
     category: "Death Benefits",
     categoryF: "Prestations Décès",
-    icon: "🪦",
+    icon: "✝",
     title: "Survivor's Pension & Death Grant",
     titleF: "Pension de Survivant & Capital Décès",
     who: "Spouse and dependent children of a CNPS-registered worker who dies either while in active service or after retirement.",
@@ -1420,7 +1420,7 @@ const SOCIAL_BENEFITS = [
   {
     category: "Work Accidents & Occupational Diseases",
     categoryF: "Accidents du Travail & Maladies Professionnelles",
-    icon: "⚠️",
+    icon: "⚠",
     title: "Occupational Accident & Disease Benefits",
     titleF: "Prestations Accidents du Travail",
     who: "All workers registered with CNPS who suffer an accident at the workplace or while commuting to/from work, or who develop a recognized occupational disease.",
@@ -1695,7 +1695,7 @@ function renderUrgentSent() {
     html += `</div>`;
   } else {
     html += `<div class="no-contacts-warning">
-      ⚠️ ${t
+      ⚠ ${t
         ? "Aucun contact d'urgence n'est configuré. Allez dans Profil pour en ajouter, afin que de l'aide puisse vous être envoyée la prochaine fois."
         : "No emergency contacts are set up. Go to Profile to add some, so help can be alerted next time."}
     </div>`;
@@ -1757,7 +1757,7 @@ function openIncident(cat) {
     medicalBox.style.display = 'none';
     document.getElementById('nearestUnitName').textContent = cat.unit + " — Yaoundé Centre";
     document.getElementById('unitCallBtn').textContent = "📞 +237 222 22 20 22";
-    document.getElementById('unitEmailBtn').textContent = "✉️ " + (t ? "Envoyer Email" : "Email Unit");
+    document.getElementById('unitEmailBtn').textContent = "✉ " + (t ? "Envoyer Email" : "Email Unit");
   }
 
   document.getElementById('complaintText').value = '';
@@ -1792,7 +1792,7 @@ function renderMedicalFacilities() {
       ${f.services ? `<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">${escapeHtml(f.services)}</div>` : ''}
       <div class="medical-facility-contact-row">
         <button class="unit-call" onclick="window.location.href='tel:${f.phone.replace(/\s/g,'')}'">📞 ${f.phone}</button>
-        ${f.email ? `<button class="unit-email" onclick="window.location.href='mailto:${f.email}'">✉️ Email</button>` : (f.phone2 ? `<button class="unit-call" onclick="window.location.href='tel:${f.phone2.replace(/\s/g,'')}'">📞 ${f.phone2}</button>` : '')}
+        ${f.email ? `<button class="unit-email" onclick="window.location.href='mailto:${f.email}'">✉ Email</button>` : (f.phone2 ? `<button class="unit-call" onclick="window.location.href='tel:${f.phone2.replace(/\s/g,'')}'">📞 ${f.phone2}</button>` : '')}
       </div>
     </div>
   `).join('');
@@ -1860,63 +1860,57 @@ function renderSocialBenefitsList(query) {
   let items = SOCIAL_BENEFITS;
   if (query && query.trim()) {
     const q = query.toLowerCase();
-    items = SOCIAL_BENEFITS.filter(b =>
-      (b.title + ' ' + b.titleF + ' ' + b.what + ' ' + b.category + ' ' + b.who).toLowerCase().includes(q)
-    );
+    items = SOCIAL_BENEFITS.filter(function(b) {
+      return (b.title + ' ' + b.titleF + ' ' + b.what + ' ' + b.category + ' ' + b.who).toLowerCase().includes(q);
+    });
   }
 
-  countEl.textContent = items.length + ' ' + (t ? 'prestations trouvées' : 'benefits found') +
+  countEl.textContent = items.length + ' ' + (t ? 'prestations trouvees' : 'benefits found') +
     (query ? '' : (' ' + (t ? 'au total' : 'in total')));
 
   if (items.length === 0) {
     list.innerHTML = '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">' +
-      (t ? 'Aucune prestation trouvée.' : 'No benefits found.') + '</p>';
+      (t ? 'Aucune prestation trouvee.' : 'No benefits found.') + '</p>';
     return;
   }
 
-  list.innerHTML = items.map((b, i) => {
-    const idx = SOCIAL_BENEFITS.indexOf(b);
-    const isOpen = expandedBenefit === idx;
-    const title = t ? b.titleF : b.title;
-    const cat = t ? b.categoryF : b.category;
-    return '<div style="background:#f8fbf9;border:1px solid var(--border);border-radius:14px;overflow:hidden">' +
-      '<div onclick="toggleBenefit(' + idx + ')" style="padding:14px;cursor:pointer">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
-          '<span style="font-size:18px">' + b.icon + '</span>' +
-          '<span style="font-size:16px;color:var(--muted)">' + (isOpen ? '−' : '+') + '</span>' +
+  list.innerHTML = items.map(function(b, i) {
+    var idx = SOCIAL_BENEFITS.indexOf(b);
+    var isOpen = expandedBenefit === idx;
+    var title = t ? b.titleF : b.title;
+    var cat = t ? b.categoryF : b.category;
+    var who = t ? b.whoF : b.who;
+    var what = t ? b.whatF : b.what;
+    var howTo = t ? b.howToF : b.howTo;
+
+    var expanded = isOpen ? (
+      '<div style="padding:12px 0 0;border-top:1px solid var(--border);margin-top:10px">' +
+        '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + (t ? 'QUI PEUT EN BENEFICIER' : 'WHO QUALIFIES') + '</div>' +
+        '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + escapeHtml(who) + '</div>' +
+        '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + (t ? 'CE QUE VOUS RECEVEZ' : 'WHAT YOU GET') + '</div>' +
+        '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + escapeHtml(what) + '</div>' +
+        '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + (t ? 'COMMENT FAIRE LA DEMANDE' : 'HOW TO APPLY') + '</div>' +
+        '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + escapeHtml(howTo) + '</div>' +
+        '<div style="background:#eff8f3;border-radius:10px;padding:8px 12px">' +
+          '<div style="font-size:10px;font-weight:700;color:#0A3D2B;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">CONTACT</div>' +
+          '<div style="font-size:12px;color:#0A3D2B;font-weight:600">' + escapeHtml(b.contact) + '</div>' +
         '</div>' +
-        '<div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + escapeHtml(cat) + '</div>' +
-        '<div style="font-size:14px;font-weight:700;color:var(--green)">' + escapeHtml(title) + '</div>' +
-      '</div>' +
-      (isOpen ? (
-        '<div style="padding:0 14px 14px;border-top:1px solid var(--border)">' +
-          '<div style="margin-top:12px">' +
-            '<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' +
-              (t ? 'QUI PEUT EN BÉNÉFICIER' : 'WHO QUALIFIES') +
-            '</div>' +
-            '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">' + escapeHtml(t ? b.whoF : b.who) + '</div>' +
+      '</div>'
+    ) : '';
+
+    return (
+      '<div onclick="toggleBenefit(' + idx + ')" style="background:#f8fbf9;border:1px solid #D6E5D8;border-radius:14px;padding:14px;cursor:pointer">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between">' +
+          '<div style="flex:1">' +
+            '<div style="font-size:10px;font-weight:700;color:#C8A84B;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">' + escapeHtml(cat) + '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#0A3D2B">' + escapeHtml(title) + '</div>' +
           '</div>' +
-          '<div>' +
-            '<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' +
-              (t ? 'CE QUE VOUS RECEVEZ' : 'WHAT YOU GET') +
-            '</div>' +
-            '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">' + escapeHtml(t ? b.whatF : b.what) + '</div>' +
-          '</div>' +
-          '<div>' +
-            '<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' +
-              (t ? 'COMMENT FAIRE LA DEMANDE' : 'HOW TO APPLY') +
-            '</div>' +
-            '<div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">' + escapeHtml(t ? b.howToF : b.howTo) + '</div>' +
-          '</div>' +
-          '<div style="background:#eff8f3;border:1px solid var(--border);border-radius:10px;padding:8px 12px">' +
-            '<div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">' +
-              (t ? 'CONTACT' : 'CONTACT') +
-            '</div>' +
-            '<div style="font-size:12px;color:var(--green);font-weight:600">' + escapeHtml(b.contact) + '</div>' +
-          '</div>' +
-        '</div>'
-      ) : '') +
-    '</div>';
+          '<div style="font-size:20px;margin-left:10px;flex-shrink:0">' + b.icon + '</div>' +
+          '<div style="font-size:18px;font-weight:700;color:#5A7060;margin-left:8px;flex-shrink:0">' + (isOpen ? '-' : '+') + '</div>' +
+        '</div>' +
+        expanded +
+      '</div>'
+    );
   }).join('');
 }
 
@@ -2114,7 +2108,7 @@ async function sendAdvice() {
     ? "RELEVANT SECTIONS FROM CAMEROON PENAL CODE:\n\n" + relevant.map(s => s.h + ":\n" + s.b).join("\n\n")
     : "";
 
-  const sys = `You are MyLawyer, the official legal assistant for Cameroon. Answer based on the Cameroon Penal Code (Law No. 2016/007), OHADA business law, and Cameroonian civil law. Use simple language. Cite Section numbers where relevant. State penalties clearly. Keep under 280 words. Do not use Markdown formatting (no #, ##, **, -, or other symbols) — write in plain prose paragraphs only, using blank lines to separate ideas. End with: "⚖️ For certified representation, contact a registered Avocat or Notaire." Respond in ${t ? "French" : "English"}.\n\n${penalCtx}`;
+  const sys = `You are MyLawyer, the official legal assistant for Cameroon. Answer based on the Cameroon Penal Code (Law No. 2016/007), OHADA business law, and Cameroonian civil law. Use simple language. Cite Section numbers where relevant. State penalties clearly. Keep under 280 words. Do not use Markdown formatting (no #, ##, **, -, or other symbols) — write in plain prose paragraphs only, using blank lines to separate ideas. End with: "⚖ For certified representation, contact a registered Avocat or Notaire." Respond in ${t ? "French" : "English"}.\n\n${penalCtx}`;
 
   try {
     const res = await fetch("/api/legal-advice", {
@@ -2243,7 +2237,7 @@ function renderApp() {
   document.getElementById('navSignupLabel').textContent = t ? "Compte" : "Sign Up";
 
   // Danger modal
-  document.getElementById('dangerTitle').textContent = "⚠️ " + (t ? "Signaler un Danger" : "Report a Danger");
+  document.getElementById('dangerTitle').textContent = "⚠ " + (t ? "Signaler un Danger" : "Report a Danger");
   document.getElementById('dangerSub').textContent = t ? "Est-ce une urgence nécessitant une aide immédiate ?" : "Is this an emergency requiring immediate help?";
   document.getElementById('urgentBtnText').textContent = "🆘 " + (t ? "URGENT — Alerter mes Contacts" : "URGENT — Alert My Contacts");
   document.getElementById('notUrgentBtnText').textContent = "🔔 " + (t ? "Pas Urgent — Signaler un Incident" : "Not Urgent — Report Incident");
@@ -2256,10 +2250,10 @@ function renderApp() {
   // Signup modal
   document.getElementById('signupTitle').textContent = t ? "Rejoindre MyLawyer" : "Join MyLawyer";
   document.getElementById('signupSub').textContent = t ? "Inscription rapide — moins d'une minute." : "Quick sign up — takes less than a minute.";
-  document.getElementById('ageNotice').innerHTML = "⚠️ <strong>" + (t ? "Âge minimum: 18 ans et plus." : "Age Requirement: 18 years and above only.") + "</strong>";
+  document.getElementById('ageNotice').innerHTML = "⚠ <strong>" + (t ? "Âge minimum: 18 ans et plus." : "Age Requirement: 18 years and above only.") + "</strong>";
   document.getElementById('contactLabel').textContent = t ? "Numéro de téléphone ou Email" : "Phone Number or Email";
   document.getElementById('modePhone').innerHTML = "📱 " + (t ? "Téléphone" : "Phone");
-  document.getElementById('modeEmail').innerHTML = "✉️ Email";
+  document.getElementById('modeEmail').innerHTML = "✉ Email";
   document.getElementById('signupEmail').placeholder = "yourname@email.com";
   document.getElementById('passwordLabel').textContent = t ? "Mot de passe" : "Password";
   document.getElementById('signupPassword').placeholder = t ? "Choisissez un mot de passe" : "Choose a strong password";
