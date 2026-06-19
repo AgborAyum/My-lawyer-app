@@ -743,8 +743,20 @@ button, input, textarea, select { font-family: inherit; }
     </div>
 
     <div id="medicalFacilitiesBox" style="display:none;margin-bottom:16px">
-      <div class="nearest-unit-label" id="medicalFacilitiesLabel" style="margin-bottom:10px">📍 Medical Facilities Near You</div>
-      <div id="medicalFacilitiesList" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="nearest-unit-label" id="medicalFacilitiesLabel" style="margin-bottom:8px">📍 Medical Facilities Near You</div>
+      <input type="text" id="medicalSearch"
+        placeholder="Search by name, location or service..."
+        oninput="renderMedicalFacilities(this.value)"
+        style="width:100%;border:1.5px solid #D6E5D8;border-radius:10px;padding:9px 12px;
+               font-size:13px;margin-bottom:8px;box-sizing:border-box;outline:none;font-family:Arial" />
+      <div id="medicalCount" style="font-size:11px;font-weight:700;color:#5A7060;
+           letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px"></div>
+      <div id="medicalFacilitiesList" style="display:flex;flex-direction:column;gap:8px;
+           max-height:52vh;overflow-y:auto"></div>
+      <button onclick="closeMedicalBox()"
+        style="width:100%;background:none;border:1px solid #D6E5D8;border-radius:12px;
+               padding:11px;font-size:14px;color:#5A7060;cursor:pointer;margin-top:10px;
+               font-family:Arial;font-weight:600">Close Medical Directory</button>
     </div>
 
     <textarea id="complaintText" rows="4" placeholder="Describe what is happening, address, any injuries…"></textarea>
@@ -965,6 +977,22 @@ button, input, textarea, select { font-family: inherit; }
   </div>
 </div>
 
+<!-- ═══════════════ GOVERNMENT OFFICES MODAL ═══════════════ -->
+<div class="overlay" id="govOfficesOverlay" onclick="closeGovOffices(event)">
+  <div class="modal" style="max-height:92vh">
+    <div class="modal-handle"></div>
+    <h2 id="govOfficesTitle">🏛 Government Offices</h2>
+    <p class="modal-sub" id="govOfficesSub">Find the right ministry, what it does, and where to go.</p>
+    <input class="form-input" id="govOfficesSearch"
+      placeholder="Search by ministry name, service, or location..."
+      oninput="renderGovOfficesList(this.value)"
+      style="margin-bottom:10px"/>
+    <div id="govOfficesCount" style="font-size:11px;font-weight:700;color:#5A7060;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px"></div>
+    <div id="govOfficesList" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding-right:2px"></div>
+    <button class="cancel-btn" onclick="closeGovOffices()" style="margin-top:14px">Close</button>
+  </div>
+</div>
+
 <!-- ═══════════════ DRAWER ═══════════════ -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 <div class="drawer" id="drawer">
@@ -991,13 +1019,13 @@ button, input, textarea, select { font-family: inherit; }
       <span class="icon">🤲</span>
       <span class="label" id="drawer-socialbenfits-label">Social Benefits</span>
     </div>
-    <div class="drawer-item" onclick="toggleDrawer();navTo('services')">
+    <div class="drawer-item" onclick="toggleDrawer()">
       <span class="icon">🏛️</span>
-      <span class="label" id="drawer-gov-label">Government Offices</span>
+      <span class="label" id="drawer-gov-label">Your Rights</span>
     </div>
-    <div class="drawer-item" onclick="toggleDrawer();navTo('services')">
+    <div class="drawer-item" onclick="toggleDrawer()">
       <span class="icon">✊</span>
-      <span class="label" id="drawer-rights-label">Human Rights Orgs</span>
+      <span class="label" id="drawer-rights-label">Your Duties</span>
     </div>
     <div class="drawer-item" onclick="toggleDrawer();navTo('services')">
       <span class="icon">⚖️</span>
@@ -1298,11 +1326,157 @@ const MEDICAL_FACILITIES = [
     phone: "+237 670535860",
     email: "ngumrobert@gmail.com"
   },
+
+  // ═══════════════════════════════════════════════════════
+  // GOVERNMENT HOSPITALS — Source: minsante.cm
+  // ═══════════════════════════════════════════════════════
+
+  // ── CENTRE REGION
+  {
+    name: "Hopital Central de Yaounde (HCY)",
+    type: "Government Hospital", typeF: "Hopital Public",
+    region: "Centre Region", town: "Yaounde, Rue Henri Dunant, Grand-Messa",
+    services: "General medicine, cardiology, neurology, neurosurgery, oncology, gynaecology & obstetrics, paediatric surgery, ophthalmology, ENT, orthopaedics, urology, dermatology, nephrology, gastroenterology, endocrinology, geriatrics, haematology, laboratory, blood bank, pharmacy, radiology, 24/7 emergency (CCAUY)",
+    phone: "+237 222 234 020", phone2: "+237 243 680 333",
+    email: ""
+  },
+  {
+    name: "Hopital General de Yaounde (HGY)",
+    type: "Government Hospital", typeF: "Hopital Public",
+    region: "Centre Region", town: "Yaounde, Ngousso",
+    services: "General medicine, surgery, cardiology, neurology, nephrology/haemodialysis, haematology, endocrinology, gastroenterology, dermatology, pneumology, rheumatology, geriatrics, gynaecology, paediatrics, ORL, ophthalmology, radiology, laboratory, 24/7 emergency",
+    phone: "+237 671 766 712",
+    email: "contact@hopitalgeneraldeyaounde.cm"
+  },
+  {
+    name: "Centre des Urgences de Yaounde (CURY)",
+    type: "Emergency Centre", typeF: "Centre d'Urgences",
+    region: "Centre Region", town: "Yaounde",
+    services: "24/7 medical emergencies, trauma care, resuscitation, triage, ambulance coordination — call immediately for life-threatening emergencies",
+    phone: "+237 222 234 020",
+    email: ""
+  },
+
+  // ── LITTORAL REGION
+  {
+    name: "Hopital Laquintinie de Douala",
+    type: "Government Hospital", typeF: "Hopital Public",
+    region: "Littoral Region", town: "Douala, Quartier Akwa II, Avenue du Dr Jamot",
+    services: "General medicine, cardiology, dermatology, endocrinology, nephrology, neurology, pulmonology, psychiatry, rheumatology, traumatology, urology, gynaecology & obstetrics, paediatrics, ORL, ophthalmology, laboratory, blood bank, pharmacy, radiology, 24/7 emergency",
+    phone: "+237 688 824 844", phone2: "+237 233 426 868",
+    email: "contact@hopitallaquintinie.com"
+  },
+  {
+    name: "Hopital General de Douala (HGD)",
+    type: "Government Hospital", typeF: "Hopital Public",
+    region: "Littoral Region", town: "Douala",
+    services: "General medicine, surgery, cardiology, neurology, nephrology/haemodialysis, haematology, endocrinology, gynaecology & obstetrics, paediatrics, ORL, ophthalmology, gastroenterology, dermatology, pneumology, nutrition, radiology, laboratory, 24/7 emergency",
+    phone: "+237 699 871 424",
+    email: "hgd@hgd.cm"
+  },
+  {
+    name: "Hopital Gyneco-Obstetrique et Pediatrique de Douala (HGOPED)",
+    type: "Specialist Hospital", typeF: "Hopital Specialise",
+    region: "Littoral Region", town: "Douala, B.P. 812",
+    services: "Specialist mother and child hospital — gynaecology, obstetrics, maternity, neonatology, paediatrics, fertility treatment, antenatal clinic, laboratory, radiology, pharmacy",
+    phone: "+237 233 504 300", phone2: "+237 695 249 925",
+    email: ""
+  },
+
+  // ── REGIONAL HEALTH DELEGATIONS — MINSANTE (one per region)
+  {
+    name: "MINSANTE Regional Delegation — Adamawa",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "Adamawa Region", town: "Ngaoundere",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in Adamawa Region",
+    phone: "+237 677 468 038",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — Centre",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "Centre Region", town: "Yaounde",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in Centre Region",
+    phone: "+237 676 299 397",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — East",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "East Region", town: "Bertoua",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in East Region",
+    phone: "+237 699 593 583",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — Far North",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "Far North Region", town: "Maroua",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in Far North Region",
+    phone: "+237 674 005 925", phone2: "+237 695 772 669",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — Littoral",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "Littoral Region", town: "Douala",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in Littoral Region",
+    phone: "+237 233 422 966", phone2: "+237 694 265 868",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — North",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "North Region", town: "Garoua",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in North Region",
+    phone: "+237 222 273 113", phone2: "+237 663 611 150",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — North West",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "North West Region", town: "Bamenda",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in North West Region",
+    phone: "+237 677 284 876", phone2: "+237 699 166 652",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — West",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "West Region", town: "Bafoussam",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in West Region",
+    phone: "+237 699 817 740", phone2: "+237 699 724 153",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — South",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "South Region", town: "Ebolowa",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in South Region",
+    phone: "+237 699 124 816", phone2: "+237 697 852 714",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE Regional Delegation — South West",
+    type: "Regional Health Authority", typeF: "Delegation Regionale Sante",
+    region: "South West Region", town: "Buea",
+    services: "Regional health coordination, referrals, public health emergencies, health complaints for all health districts in South West Region",
+    phone: "+237 233 322 262", phone2: "+237 679 027 377",
+    email: "contact@dossier.minsante.cm"
+  },
+  {
+    name: "MINSANTE — Ministry of Public Health (National HQ)",
+    type: "National Health Ministry", typeF: "Ministere de la Sante Publique",
+    region: "All Regions", town: "Yaounde (National Headquarters)",
+    services: "National health policy, Universal Health Coverage (CSU), CCOUSP emergency line 1510, pharmaceutical regulation, disease surveillance, national health strategy 2016-2027. WhatsApp news channel: MINSANTE ACTU",
+    phone: "+237 222 222 201", phone2: "1510",
+    email: "contact@minsante.cm"
+  }
 ];
 
 // ── Services Directory
 const SERVICES = [
-  { icon:"🏛", title:"Government Offices",    titleF:"Bureaux Gouvernementaux", desc:"Préfet, S.D.O., Mayor, CVUC, Tribunals — with requirements and contacts.", descF:"Préfet, S.D.O., Maire — avec conditions et contacts." },
+  { icon:"🏛", title:"Government Offices", titleF:"Bureaux Gouvernementaux", desc:"36 ministries — find the right office, their services, and locations.", descF:"36 ministeres — trouvez le bon bureau, ses services et ses emplacements.", action:"openGovOffices" },
   { icon:"✊", title:"Human Rights Orgs",      titleF:"ONG des Droits de l'Homme", desc:"CNDHL, REDHAC, Mandela Center, HRW Cameroon, Nouveaux Droits de l'Homme.", descF:"CNDHL, REDHAC, Mandela Center, HRW Cameroun." },
   { icon:"🌿", title:"Environment & Land",     titleF:"Environnement & Foncier", desc:"MINFOF, CED, land rights advocacy groups and environmental civil societies.", descF:"MINFOF, CED, groupes de défense des droits fonciers." },
   { icon:"⚖", title:"Legal Aid Centres",      titleF:"Centres d'Aide Juridique", desc:"Free or subsidised legal assistance offices across Cameroon.", descF:"Assistance juridique gratuite ou subventionnée à travers le Cameroun." },
@@ -1549,6 +1723,510 @@ const SOCIAL_BENEFITS = [
   },
 ];
 
+// ═══════════════════════════════════════════════════════
+// CAMEROON GOVERNMENT OFFICES — 36 Ministries
+// Sources: spm.gov.cm, ministry websites, 2026 data
+// ═══════════════════════════════════════════════════════
+const GOV_OFFICES = [
+  {
+    acronym: "MINJUSTICE",
+    name: "Ministry of Justice",
+    nameF: "Ministere de la Justice",
+    icon: "⚖",
+    summary: "Need legal help, going to court, or dealing with the prison system? This is where justice starts.",
+    summaryF: "Besoin d'aide juridique, d'aller en tribunal ou de traiter avec le systeme penitentiaire? C'est ici que commence la justice.",
+    services: "Courts and tribunals, legal aid, notaries, bailiffs, prison administration, civil status (birth/death/marriage certificates), nationality certificates, criminal record (casier judiciaire), appeals, prosecution, rehabilitation of offenders",
+    servicesF: "Tribunaux, aide juridictionnelle, notaires, huissiers, administration penitentiaire, etat civil, certificats de nationalite, casier judiciaire, appels, rehabilitation des detenus",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Court of Appeal — South West Region", type: "Regional Court", phone: "", email: "" },
+      { city: "Kumba", label: "High Court Kumba", type: "Court", phone: "", email: "" },
+      { city: "Limbe", label: "High Court Limbe", type: "Court", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINSANTE",
+    name: "Ministry of Public Health",
+    nameF: "Ministere de la Sante Publique",
+    icon: "🏥",
+    summary: "All public hospitals, vaccines, disease outbreaks, and national health policy fall under this ministry.",
+    summaryF: "Tous les hopitaux publics, vaccins, epidemies et politiques de sante nationale relevent de ce ministere.",
+    services: "Public hospitals oversight, vaccination programmes, disease surveillance, health insurance (CSU), pharmaceutical regulation, maternal and child health, HIV/AIDS programmes, emergency health line 1510, nutrition, epidemic control",
+    servicesF: "Supervision des hopitaux publics, programmes de vaccination, surveillance des maladies, assurance maladie (CSU), regulation pharmaceutique, sante maternelle et infantile, programmes VIH/SIDA, ligne d'urgence 1510",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters — Quartier du Lac, Rue 3038", type: "HQ", phone: "+237 222 23 04 68", email: "contact@minsante.cm" },
+      { city: "Buea", label: "Regional Health Delegation — BRH Compound", type: "Regional Office", phone: "+237 233 322 262", email: "contact@dossier.minsante.cm" }
+    ]
+  },
+  {
+    acronym: "MINAT",
+    name: "Ministry of Territorial Administration",
+    nameF: "Ministere de l'Administration Territoriale",
+    icon: "🏛",
+    summary: "Handles national ID cards, elections, regional/divisional administration, and public order.",
+    summaryF: "Gere les cartes nationales d'identite, les elections, l'administration regionale et l'ordre public.",
+    services: "National ID card (CNI) issuance and renewal, voter registration, elections management, oversight of governors/prefets/sous-prefets, council supervision, political parties registration, maintenance of public order",
+    servicesF: "Delivrance et renouvellement de la CNI, inscription sur les listes electorales, gestion des elections, supervision des gouverneurs/prefets, enregistrement des partis politiques, maintien de l'ordre public",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "+237 222 23 10 56", email: "" },
+      { city: "Buea", label: "Governor's Office — South West Region", type: "Governor's Office", phone: "", email: "" },
+      { city: "Douala", label: "Governor's Office — Littoral Region (Wouri)", type: "Governor's Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINREX",
+    name: "Ministry of External Relations",
+    nameF: "Ministere des Relations Exterieures",
+    icon: "🌍",
+    summary: "Passports, visas, embassies, and all matters for Cameroonians abroad or foreigners in Cameroon.",
+    summaryF: "Passeports, visas, ambassades et affaires des Camerounais a l'etranger ou des etrangers au Cameroun.",
+    services: "Passport issuance and renewal, visa processing, consular services for Cameroonians abroad, authentication of foreign documents, bilateral agreements, diplomatic relations, residency permits for foreigners",
+    servicesF: "Delivrance et renouvellement de passeport, traitement des visas, services consulaires, authentification de documents etrangers, permis de sejour pour etrangers",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters — 791 Avenue Konrad Adenauer, BP 001", type: "HQ", phone: "+237 222 20 30 23", email: "" },
+      { city: "Buea", label: "Passport Center", type: "Passport Office", phone: "", email: "" },
+      { city: "Limbe", label: "Passport Center Limbe", type: "Passport Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINFI",
+    name: "Ministry of Finance",
+    nameF: "Ministere des Finances",
+    icon: "💰",
+    summary: "Taxes, customs, the national budget, and all financial matters involving the state.",
+    summaryF: "Impots, douanes, budget national et toutes les questions financieres impliquant l'Etat.",
+    services: "Tax registration and payment (DGI), customs duties, state budget management, public treasury, financial control, tax identification number (NIF), VAT, business tax, toll-free tax helpline 1509",
+    servicesF: "Immatriculation et paiement des impots (DGI), droits de douane, gestion du budget de l'Etat, tresor public, controle financier, NIF, TVA, impot sur les societes, numero vert fiscal 1509",
+    locations: [
+      { city: "Yaounde", label: "Ministry of Finance Headquarters", type: "HQ", phone: "+237 222 22 49 53", email: "contact@dgtcfm.cm" },
+      { city: "Buea", label: "Tax Center Buea — DGI South West", type: "Tax Office", phone: "", email: "" },
+      { city: "Limbe", label: "Tax Center Limbe", type: "Tax Office", phone: "", email: "" },
+      { city: "Kumba", label: "Tax Center Kumba", type: "Tax Office", phone: "", email: "" },
+      { city: "Douala", label: "Customs & Tax Office Douala", type: "Tax/Customs", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINESEC",
+    name: "Ministry of Secondary Education",
+    nameF: "Ministere des Enseignements Secondaires",
+    icon: "📚",
+    summary: "All secondary schools, GCE/BAC examinations, and high school matters.",
+    summaryF: "Tous les lycees et colleges, examens GCE/BAC et questions relatives au secondaire.",
+    services: "Secondary school enrolment, GCE O/A Level and BAC examinations, school certificates and attestations, teacher postings, school creation approvals, scholarships at secondary level",
+    servicesF: "Inscription dans les lycees/colleges, examens GCE/BAC, attestations scolaires, affectation des enseignants, creation d'etablissements, bourses au niveau secondaire",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "+237 222 22 38 43", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Bamenda", label: "Regional Delegation — North West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINESUP",
+    name: "Ministry of Higher Education",
+    nameF: "Ministere de l'Enseignement Superieur",
+    icon: "🎓",
+    summary: "Universities, degree recognition, government scholarships, and higher education policy.",
+    summaryF: "Universites, reconnaissance des diplomes, bourses d'Etat et politique d'enseignement superieur.",
+    services: "University enrolment and transfers, degree recognition and equivalence, government bursaries (bourses d'etat), bilateral scholarships, university creation approvals, postgraduate registration",
+    servicesF: "Inscription et transfert universitaire, reconnaissance et equivalence des diplomes, bourses d'Etat, bourses bilaterales, creation d'universites, inscription en postgraduate",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "University of Buea", type: "University", phone: "", email: "" },
+      { city: "Limbe", label: "Limbe Nautical Arts and Fisheries Institute (INAP)", type: "Institute", phone: "", email: "" },
+      { city: "Douala", label: "University of Douala", type: "University", phone: "", email: "" },
+      { city: "Bamenda", label: "University of Bamenda", type: "University", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINTSS",
+    name: "Ministry of Labour & Social Security",
+    nameF: "Ministere du Travail et de la Securite Sociale",
+    icon: "👷",
+    summary: "Workers' rights, employment contracts, CNPS social contributions, and workplace safety.",
+    summaryF: "Droits des travailleurs, contrats de travail, cotisations CNPS et securite au travail.",
+    services: "Labour inspection, employment contract registration, CNPS affiliation, workplace accident reports, minimum wage (SMIG) enforcement, collective agreements, work permits for foreigners, mediation between employers and employees, occupational safety",
+    servicesF: "Inspection du travail, enregistrement des contrats, affiliation CNPS, declaration d'accidents du travail, application du SMIG, accords collectifs, permis de travail pour etrangers",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "+237 222 22 03 90", email: "" },
+      { city: "Buea", label: "Regional Labour Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Labour Delegation — Littoral", type: "Regional Office", phone: "", email: "" },
+      { city: "Bamenda", label: "Regional Labour Delegation — North West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINDAF",
+    name: "Ministry of State Property, Surveys & Land Affairs",
+    nameF: "Ministere des Domaines, du Cadastre et des Affaires Foncieres",
+    icon: "🏠",
+    summary: "Land titles, property registration, cadastre surveys, and state land management.",
+    summaryF: "Titres fonciers, enregistrement des proprietes, cadastre et gestion des terres de l'Etat.",
+    services: "Land title (titre foncier) issuance, land surveys and cadastre plans, state land allocation, land disputes, property transfer registration, building permits (in conjunction with MINHDU), lease agreements on state land",
+    servicesF: "Delivrance de titres fonciers, plans cadastraux, attribution de terres domaniales, litiges fonciers, transfert de propriete, baux sur terres de l'Etat",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" },
+      { city: "Bamenda", label: "Regional Delegation — North West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINEDUB",
+    name: "Ministry of Basic Education",
+    nameF: "Ministere de l'Education de Base",
+    icon: "📖",
+    summary: "Primary schools, literacy, and early childhood education for all children.",
+    summaryF: "Ecoles primaires, alphabetisation et education de la petite enfance pour tous les enfants.",
+    services: "Free primary school enrolment, school certificate (CEPE/FSLC), teacher postings, literacy programmes for adults, creation of primary schools, school feeding programmes, special needs education",
+    servicesF: "Inscription gratuite a l'ecole primaire, certificat d'etudes primaires (CEPE/FSLC), affectation des enseignants, alphabetisation des adultes, creation d'ecoles primaires",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" },
+      { city: "Bamenda", label: "Regional Delegation — North West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINAS",
+    name: "Ministry of Social Affairs",
+    nameF: "Ministere des Affaires Sociales",
+    icon: "🤝",
+    summary: "Support for vulnerable people — elderly, disabled, orphans, widows, and social aid.",
+    summaryF: "Soutien aux personnes vulnerables — personnes agees, handicapees, orphelins, veuves et aide sociale.",
+    services: "Disability certificates and benefits, social assistance for the indigent, orphanage and foster care oversight, elderly care programmes, women in distress, street children, social rehabilitation centres, community development",
+    servicesF: "Certificats et prestations pour handicapes, aide sociale aux indigents, supervision des orphelinats, programmes pour personnes agees, femmes en detresse, enfants de la rue, centres de readaptation",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINPROFF",
+    name: "Ministry of Women's Empowerment & Family",
+    nameF: "Ministere de la Promotion de la Femme et de la Famille",
+    icon: "👩",
+    summary: "Women's rights, gender equality, domestic violence protection, and family support.",
+    summaryF: "Droits des femmes, egalite de genre, protection contre les violences domestiques et soutien a la famille.",
+    services: "Gender-based violence (GBV) response and referrals, women entrepreneurship support, family counselling, legal protection for women, promotion of girls' education, anti-trafficking programmes, female genital mutilation (FGM) awareness",
+    servicesF: "Reponse aux violences basees sur le genre (VBG), soutien a l'entrepreneuriat feminin, counselling familial, protection juridique des femmes, lutte contre la traite, sensibilisation contre les MGF",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINT",
+    name: "Ministry of Transport",
+    nameF: "Ministere des Transports",
+    icon: "🚗",
+    summary: "Vehicle registration, driving licences, road transport, airports, and maritime matters.",
+    summaryF: "Immatriculation des vehicules, permis de conduire, transport routier, aeroports et affaires maritimes.",
+    services: "Driving licence issuance and renewal, vehicle registration (carte grise), roadworthiness certificates (visite technique), transport company authorisations, road accident investigations, airport and maritime transport oversight",
+    servicesF: "Delivrance et renouvellement du permis de conduire, immatriculation des vehicules (carte grise), visites techniques, autorisation des societes de transport, enquetes sur accidents de la route",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral (Douala Airport)", type: "Regional Office", phone: "", email: "" },
+      { city: "Bamenda", label: "Regional Delegation — North West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINCOMMERCE",
+    name: "Ministry of Commerce",
+    nameF: "Ministere du Commerce",
+    icon: "🛒",
+    summary: "Consumer protection, price controls, trade licences, and fighting market speculation.",
+    summaryF: "Protection du consommateur, controle des prix, licences commerciales et lutte contre la speculation.",
+    services: "Business/trade licence, price control inspections, market monitoring, consumer rights complaints, import/export authorisations, anti-counterfeiting, weights and measures control, fair trade practices",
+    servicesF: "Licence commerciale, inspections de controle des prix, surveillance des marches, plaintes de consommateurs, autorisations import/export, lutte contre la contrefacon, controle des poids et mesures",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINHDU",
+    name: "Ministry of Housing & Urban Development",
+    nameF: "Ministere de l'Habitat et du Developpement Urbain",
+    icon: "🏗",
+    summary: "Building permits, urban planning, social housing (SIC), and city development.",
+    summaryF: "Permis de construire, urbanisme, logements sociaux (SIC) et developpement des villes.",
+    services: "Building permit applications, urban planning approvals, social housing allocation (SIC), slum upgrading programmes, construction standards, expropriation for public interest, neighbourhood development plans",
+    servicesF: "Demandes de permis de construire, approbations d'urbanisme, attribution de logements sociaux (SIC), amelioration des quartiers, normes de construction, expropriation pour cause d'utilite publique",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINEPDED",
+    name: "Ministry of Environment & Sustainable Development",
+    nameF: "Ministere de l'Environnement et du Developpement Durable",
+    icon: "🌿",
+    summary: "Environmental protection, climate change, pollution control, and waste management.",
+    summaryF: "Protection de l'environnement, changement climatique, controle de la pollution et gestion des dechets.",
+    services: "Environmental impact assessments (EIA), pollution complaints and investigations, industrial waste permits, deforestation reports, climate change adaptation projects, environmental certificates for businesses, protected area management",
+    servicesF: "Etudes d'impact environnemental (EIE), plaintes de pollution, permis de dechets industriels, deforestation, certificats environnementaux pour entreprises, gestion des aires protegees",
+    locations: [
+      { city: "Yaounde", label: "National HQ — Boulevard 20 Mai, Immeuble No.2, BP 320", type: "HQ", phone: "+237 222 33 34 23", email: "celcomminep@yahoo.fr" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINFOF",
+    name: "Ministry of Forestry & Wildlife",
+    nameF: "Ministere des Forets et de la Faune",
+    icon: "🌲",
+    summary: "Forest management, logging permits, wildlife protection, and national parks.",
+    summaryF: "Gestion des forets, permis d'exploitation forestiere, protection de la faune et parcs nationaux.",
+    services: "Logging and timber permits, wildlife hunting authorisations, national park management, community forest creation, anti-poaching, CITES permits, forest tax collection, agro-forestry support",
+    servicesF: "Permis d'exploitation forestiere, autorisations de chasse, gestion des parcs nationaux, forets communautaires, lutte anti-braconnage, permis CITES",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Bertoua", label: "Regional Delegation — East (key forestry region)", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINPOSTEL",
+    name: "Ministry of Posts & Telecommunications",
+    nameF: "Ministere des Postes et Telecommunications",
+    icon: "📡",
+    summary: "Postal services, telecoms regulation, internet, mobile networks, and cybersecurity.",
+    summaryF: "Services postaux, regulation des telecoms, internet, reseaux mobiles et cybersecurite.",
+    services: "Telecom operator licensing, internet regulation, postal service oversight, cybersecurity policy, mobile money regulation, spectrum management, digital economy development, resolving telecoms consumer complaints",
+    servicesF: "Licences d'operateurs telecoms, regulation internet, supervision des services postaux, cybersecurite, regulation du mobile money, economie numerique, plaintes consommateurs telecoms",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "+237 222 23 06 15", email: "contact@minpostel.gov.cm" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINADER",
+    name: "Ministry of Agriculture & Rural Development",
+    nameF: "Ministere de l'Agriculture et du Developpement Rural",
+    icon: "🌾",
+    summary: "Farmers, crops, food security, fertiliser subsidies, and rural development programmes.",
+    summaryF: "Agriculteurs, cultures, securite alimentaire, subventions d'engrais et programmes de developpement rural.",
+    services: "Subsidised fertilisers and seeds, agricultural extension services, farmer registration, crop disease control, irrigation projects, agricultural loans, land preparation support, food security programmes, export crop (cocoa, coffee, cotton) support",
+    servicesF: "Engrais et semences subventionnes, vulgarisation agricole, enregistrement des agriculteurs, maladies des cultures, projets d'irrigation, prets agricoles, soutien aux cultures d'exportation",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Bafoussam", label: "Regional Delegation — West (major farming region)", type: "Regional Office", phone: "", email: "" },
+      { city: "Garoua", label: "Regional Delegation — North (cotton belt)", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINEE",
+    name: "Ministry of Water & Energy",
+    nameF: "Ministere de l'Eau et de l'Energie",
+    icon: "💡",
+    summary: "Electricity supply, water access, dams, and rural electrification across Cameroon.",
+    summaryF: "Fourniture d'electricite, acces a l'eau, barrages et electrification rurale a travers le Cameroun.",
+    services: "Electricity connection requests, water supply complaints, rural electrification projects, dam management (AES Sonel/ENEO oversight), water quality control, tariff regulation, energy sector investment approvals",
+    servicesF: "Demandes de raccordement electrique, plaintes eau, projets d'electrification rurale, supervision ENEO, controle de la qualite de l'eau, regulation des tarifs",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral (ENEO HQ also in Douala)", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINPMEESA",
+    name: "Ministry of Small & Medium Enterprises",
+    nameF: "Ministere des PME, de l'Economie Sociale et de l'Artisanat",
+    icon: "💼",
+    summary: "Starting a small business, cooperative, or craft enterprise? This ministry supports you.",
+    summaryF: "Vous creez une petite entreprise, cooperative ou artisanat? Ce ministere vous soutient.",
+    services: "SME registration and support, business incubation, micro-credit and financing, cooperative creation, artisan certification, entrepreneurship training, women and youth entrepreneurship grants, market access support",
+    servicesF: "Enregistrement et soutien aux PME, incubation, micro-credit, creation de cooperatives, certification des artisans, formation a l'entrepreneuriat, subventions pour femmes et jeunes",
+    locations: [
+      { city: "Yaounde", label: "National HQ — Immeuble Ministeriel No.1, Post Office", type: "HQ", phone: "+237 222 23 23 88", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral (commercial hub)", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINEFOP",
+    name: "Ministry of Employment & Vocational Training",
+    nameF: "Ministere de l'Emploi et de la Formation Professionnelle",
+    icon: "📋",
+    summary: "Job seekers, vocational training, employment centres, and skills development.",
+    summaryF: "Demandeurs d'emploi, formation professionnelle, centres d'emploi et developpement des competences.",
+    services: "Job placement and employment centres (FNE), vocational training centres (CFPR), apprenticeship programmes, skills certification, graduate internship programmes, CV and job support, unemployment assistance registration",
+    servicesF: "Placement et centres d'emploi (FNE), centres de formation professionnelle (CFPR), apprentissage, certification des competences, stages des diplomes, soutien CV et emploi",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters + FNE National Office", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation + FNE South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation + FNE Littoral", type: "Regional Office", phone: "", email: "" },
+      { city: "Bamenda", label: "Regional Delegation + FNE North West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINMIDT",
+    name: "Ministry of Mines, Industry & Technological Development",
+    nameF: "Ministere des Mines, de l'Industrie et du Developpement Technologique",
+    icon: "⛏",
+    summary: "Mining licences, industrial permits, standards, and technological development.",
+    summaryF: "Licences minieres, permis industriels, normes et developpement technologique.",
+    services: "Mining exploration and exploitation licences, industrial investment approvals, standards and quality control, artisanal mining support, petroleum sector regulation, industrial zone development",
+    servicesF: "Licences d'exploration et d'exploitation miniere, approbations d'investissements industriels, controle de la qualite et normes, soutien a l'orpaillage, regulation petroliere",
+    locations: [
+      { city: "Yaounde", label: "National HQ — Immeuble Rose", type: "HQ", phone: "+237 222 22 16 70", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINJEC",
+    name: "Ministry of Youth & Civic Education",
+    nameF: "Ministere de la Jeunesse et de l'Education Civique",
+    icon: "👦",
+    summary: "Youth programmes, civic education, youth employment, and community development for young people.",
+    summaryF: "Programmes jeunesse, education civique, emploi des jeunes et developpement communautaire pour les jeunes.",
+    services: "Youth employment programmes, civic education campaigns, youth centres (CETIC, youth clubs), National Youth Day organisation, student exchange programmes, youth entrepreneurship, community service projects",
+    servicesF: "Programmes d'emploi des jeunes, campagnes d'education civique, maisons des jeunes, Journee Nationale de la Jeunesse, echanges etudiants, entrepreneuriat des jeunes",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "CONSUPE",
+    name: "Supreme State Audit (Anti-Corruption)",
+    nameF: "Controle Superieur de l'Etat",
+    icon: "🔍",
+    summary: "Audits government spending, investigates misuse of public funds, and fights corruption.",
+    summaryF: "Controle les depenses publiques, enquete sur les detournements de fonds et lutte contre la corruption.",
+    services: "Audit of public institutions and state-owned enterprises, investigation of misappropriation of public funds, anti-corruption reports, whistleblower complaint reception, financial transparency enforcement",
+    servicesF: "Audit des institutions publiques et entreprises d'Etat, enquetes sur detournements, rapports anti-corruption, reception de plaintes de lanceurs d'alerte",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters (Yaounde only)", type: "HQ", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINTOUR",
+    name: "Ministry of Tourism & Leisure",
+    nameF: "Ministere du Tourisme et des Loisirs",
+    icon: "🏖",
+    summary: "Tourism sites, hotel classification, tour guide licences, and tourism promotion.",
+    summaryF: "Sites touristiques, classement des hotels, licences de guides touristiques et promotion du tourisme.",
+    services: "Hotel and guesthouse registration/classification, tour guide and agency licensing, tourism site development, eco-tourism promotion, cultural tourism, tourist information and complaints",
+    servicesF: "Enregistrement et classement des hotels, licences de guides/agences, developpement de sites touristiques, eco-tourisme, plaintes touristiques",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West (Mt Cameroon, beaches)", type: "Regional Office", phone: "", email: "" },
+      { city: "Limbe", label: "Tourism Office — Limbe Wildlife Centre", type: "Tourism Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINRESI",
+    name: "Ministry of Scientific Research & Innovation",
+    nameF: "Ministere de la Recherche Scientifique et de l'Innovation",
+    icon: "🔬",
+    summary: "Scientific research funding, innovation grants, and research institution oversight.",
+    summaryF: "Financement de la recherche scientifique, subventions pour l'innovation et supervision des institutions de recherche.",
+    services: "Research grants and funding, scientific laboratory oversight, innovation support for start-ups, technology transfer, academic research collaboration, IRAD (agricultural research), IMPM (pharmaceutical research)",
+    servicesF: "Subventions de recherche, supervision des laboratoires, soutien a l'innovation, transfert technologique, collaboration academique, IRAD, IMPM",
+    locations: [
+      { city: "Yaounde", label: "National HQ — Plateau Atemengue, Ngoa-Ekelle", type: "HQ", phone: "+237 222 23 23 12", email: "contact@minresi.gov.cm" }
+    ]
+  },
+  {
+    acronym: "MINEPIA",
+    name: "Ministry of Livestock, Fisheries & Animal Industries",
+    nameF: "Ministere de l'Elevage, des Peches et des Industries Animales",
+    icon: "🐄",
+    summary: "Livestock farmers, fishermen, veterinary services, and animal product industries.",
+    summaryF: "Eleveurs, pecheurs, services veterinaires et industries des produits animaux.",
+    services: "Veterinary certificates, livestock movement permits, animal vaccination campaigns, fishing licences and boat registration, aquaculture support, animal feed standards, meat inspection, dairy and poultry industry support",
+    servicesF: "Certificats veterinaires, permis de mouvement du betail, campagnes de vaccination animale, licences de peche, aquaculture, inspection de la viande, industrie laitiere et avicole",
+    locations: [
+      { city: "Yaounde", label: "National HQ — Centre Administratif", type: "HQ", phone: "+237 222 23 11 72", email: "courrier@minepia.cm" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Maroua", label: "Regional Delegation — Far North (largest livestock region)", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINEPAT",
+    name: "Ministry of Economy, Planning & Regional Development",
+    nameF: "Ministere de l'Economie, de la Planification et de l'Amenagement du Territoire",
+    icon: "📊",
+    summary: "National development plans, budget forecasting, statistics, and regional development projects.",
+    summaryF: "Plans de developpement national, previsions budgetaires, statistiques et projets de developpement regional.",
+    services: "National development strategy (Vision 2035, SND30), public investment programming, economic statistics (INS), regional development planning, poverty reduction strategies, foreign investment attraction, development project monitoring",
+    servicesF: "Strategie de developpement national (Vision 2035, SND30), programmation des investissements publics, statistiques economiques (INS), planification regionale, reduction de la pauvrete",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINTP",
+    name: "Ministry of Public Works",
+    nameF: "Ministere des Travaux Publics",
+    icon: "🛣",
+    summary: "Road construction, bridges, infrastructure maintenance, and public building projects.",
+    summaryF: "Construction de routes, ponts, maintenance des infrastructures et projets de batiments publics.",
+    services: "Road construction and maintenance reports, bridge inspections, public infrastructure complaints, contractor registration, road quality complaints, rural road access projects",
+    servicesF: "Construction et entretien des routes, inspection des ponts, plaintes d'infrastructure, enregistrement des entrepreneurs, plaintes qualite des routes, acces rural",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Regional Delegation — Littoral", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINFOPRA",
+    name: "Ministry of Civil Service & Administrative Reform",
+    nameF: "Ministere de la Fonction Publique et de la Reforme Administrative",
+    icon: "🏢",
+    summary: "Civil service recruitment, public servant salaries, and government administrative reform.",
+    summaryF: "Recrutement dans la fonction publique, salaires des agents de l'Etat et reforme administrative.",
+    services: "Civil service competitive exams (concours), civil servant employment cards, salary regularisation, promotion and reclassification, civil service disciplinary matters, administrative simplification",
+    servicesF: "Concours de la fonction publique, cartes d'emploi de fonctionnaires, regularisation des salaires, promotion et reclassification, sanctions disciplinaires, simplification administrative",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINDEF",
+    name: "Ministry of Defence",
+    nameF: "Ministere de la Defense",
+    icon: "🎖",
+    summary: "National defence, military forces, and military hospitals.",
+    summaryF: "Defense nationale, forces armees et hopitaux militaires.",
+    services: "National security and defence, military recruitment, military hospitals (open to civilians in emergencies), border security coordination, peacekeeping missions, civil-military relations",
+    servicesF: "Securite nationale et defense, recrutement militaire, hopitaux militaires (ouverts aux civils en urgence), securite des frontieres",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters — Etat-Major des Armees", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Military Region 2 Headquarters — South West / Littoral", type: "Military HQ", phone: "", email: "" }
+    ]
+  },
+  {
+    acronym: "MINSEP",
+    name: "Ministry of Sports & Physical Education",
+    nameF: "Ministere des Sports et de l'Education Physique",
+    icon: "⚽",
+    summary: "Sports federations, national stadiums, sporting events, and athlete support.",
+    summaryF: "Federations sportives, stades nationaux, evenements sportifs et soutien aux athletes.",
+    services: "Sports federation registration, stadium management, national athlete selection and support, sports school creation, anti-doping control, major event organisation (AFCON, etc.)",
+    servicesF: "Enregistrement des federations sportives, gestion des stades, selection et soutien des athletes nationaux, creation d'ecoles sportives, controle antidopage",
+    locations: [
+      { city: "Yaounde", label: "National Headquarters + Stade Omnisports", type: "HQ", phone: "", email: "" },
+      { city: "Buea", label: "Regional Delegation — South West", type: "Regional Office", phone: "", email: "" },
+      { city: "Douala", label: "Stade de la Reunification", type: "Stadium", phone: "", email: "" }
+    ]
+  }
+];
+
+
 /* ═══════════════════════════════════════════════════════
    MyLawyer — Main Application Logic
    ═══════════════════════════════════════════════════════ */
@@ -1751,7 +2429,8 @@ function openIncident(cat) {
   if (cat.id === 'medical') {
     nearestBox.style.display = 'none';
     medicalBox.style.display = 'block';
-    renderMedicalFacilities();
+    document.getElementById('medicalSearch').value = '';
+    renderMedicalFacilities('');
   } else {
     nearestBox.style.display = 'block';
     medicalBox.style.display = 'none';
@@ -1770,32 +2449,70 @@ function openIncident(cat) {
   openOverlay('incidentOverlay');
 }
 
-function renderMedicalFacilities() {
-  const t = state.lang === 'FR';
-  const label = document.getElementById('medicalFacilitiesLabel');
-  const list = document.getElementById('medicalFacilitiesList');
-  const userRegion = (state.userProfile && state.userProfile.region) || '';
+function renderMedicalFacilities(query) {
+  var t = state.lang === 'FR';
+  var label = document.getElementById('medicalFacilitiesLabel');
+  var list = document.getElementById('medicalFacilitiesList');
+  var countEl = document.getElementById('medicalCount');
+  var userRegion = (state.userProfile && state.userProfile.region) || '';
+  query = (query || '').toLowerCase().trim();
 
-  let facilities = MEDICAL_FACILITIES;
-  if (userRegion) {
-    const filtered = MEDICAL_FACILITIES.filter(f => f.region === userRegion);
+  var facilities = MEDICAL_FACILITIES;
+
+  if (query) {
+    // Search by name, location (town/region), or service
+    facilities = MEDICAL_FACILITIES.filter(function(f) {
+      var combined = (f.name + ' ' + f.town + ' ' + f.region + ' ' + (f.services || '') + ' ' + f.type).toLowerCase();
+      return combined.indexOf(query) !== -1;
+    });
+  } else if (userRegion) {
+    var filtered = MEDICAL_FACILITIES.filter(function(f) { return f.region === userRegion; });
     if (filtered.length > 0) facilities = filtered;
   }
 
-  label.textContent = (t ? "📍 Établissements médicaux près de vous" : "📍 Medical Facilities Near You") +
-    (userRegion ? ` — ${userRegion}` : '');
+  label.textContent = query
+    ? (t ? 'Résultats de recherche' : 'Search Results')
+    : ('📍 ' + (t ? 'Etablissements medicaux pres de vous' : 'Medical Facilities Near You') + (userRegion && !query ? ' — ' + userRegion : ''));
 
-  list.innerHTML = facilities.map(f => `
-    <div class="medical-facility-card">
-      <div class="medical-facility-name">${escapeHtml(f.name)}</div>
-      <div class="medical-facility-meta">${t ? f.typeF : f.type} · ${escapeHtml(f.town)}</div>
-      ${f.services ? `<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">${escapeHtml(f.services)}</div>` : ''}
-      <div class="medical-facility-contact-row">
-        <button class="unit-call" onclick="window.location.href='tel:${f.phone.replace(/\s/g,'')}'">📞 ${f.phone}</button>
-        ${f.email ? `<button class="unit-email" onclick="window.location.href='mailto:${f.email}'">✉ Email</button>` : (f.phone2 ? `<button class="unit-call" onclick="window.location.href='tel:${f.phone2.replace(/\s/g,'')}'">📞 ${f.phone2}</button>` : '')}
-      </div>
-    </div>
-  `).join('');
+  countEl.textContent = facilities.length + ' ' + (t ? 'etablissement(s) trouve(s)' : 'facility/facilities found');
+
+  if (facilities.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:#5A7060;text-align:center;padding:16px 0">' +
+      (t ? 'Aucun établissement trouvé.' : 'No facilities found. Try a different keyword.') + '</p>';
+    return;
+  }
+
+  list.innerHTML = facilities.map(function(f) {
+    var p2 = f.phone2 ? f.phone2.replace(/ /g,'') : '';
+    var phone2Btn = f.phone2
+      ? ('<button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="callNum(this.dataset.n)" data-n="' + p2 + '">📞 ' + f.phone2 + '</button>')
+      : '';
+    var emailBtn = f.email
+      ? ('<button style="background:#e8f0fe;color:#1a73e8;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="mailTo(this.dataset.e)" data-e="' + f.email + '">✉ Email</button>')
+      : phone2Btn;
+
+    return '<div style="background:#fff8e7;border:1px solid #e8d28a;border-radius:12px;padding:12px;margin-bottom:4px">' +
+      '<div style="font-size:14px;font-weight:700;color:#0D1F17;margin-bottom:2px">' + escapeHtml(f.name) + '</div>' +
+      '<div style="font-size:11px;font-weight:700;color:#B8860B;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px">' +
+        escapeHtml(t ? f.typeF : f.type) + ' · ' + escapeHtml(f.town) +
+      '</div>' +
+      (f.services ? '<div style="font-size:12px;color:#5A7060;line-height:1.5;margin-bottom:8px">' + escapeHtml(f.services) + '</div>' : '') +
+      '<div style="display:flex;gap:8px">' +
+        ('<button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="callNum(this.dataset.n)" data-n="' + f.phone.replace(/ /g,'') + '">📞 ' + f.phone + '</button>') +
+        emailBtn +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function callNum(n) { window.location.href = 'tel:' + n; }
+function mailTo(e) { window.location.href = 'mailto:' + e; }
+
+function closeMedicalBox() {
+  document.getElementById('medicalFacilitiesBox').style.display = 'none';
+  document.getElementById('medicalSearch').value = '';
+  // Show nearest unit box and complaint section again
+  document.getElementById('nearestUnitBox').style.display = 'block';
 }
 
 function closeIncident(evt) { closeOverlay('incidentOverlay', evt); }
@@ -2177,19 +2894,115 @@ function openIncidentById(catId) {
 // ─────────────────────────────────────────────
 // RENDER: SERVICES LIST
 // ─────────────────────────────────────────────
+
+// ─────────────────────────────────────────────
+// GOVERNMENT OFFICES
+// ─────────────────────────────────────────────
+var expandedGovOffice = null;
+
+function openGovOffices() {
+  document.getElementById('govOfficesSearch').value = '';
+  expandedGovOffice = null;
+  renderGovOfficesList('');
+  openOverlay('govOfficesOverlay');
+}
+function closeGovOffices(evt) { closeOverlay('govOfficesOverlay', evt); }
+
+function renderGovOfficesList(query) {
+  var t = state.lang === 'FR';
+  var list = document.getElementById('govOfficesList');
+  var countEl = document.getElementById('govOfficesCount');
+  query = (query || '').toLowerCase().trim();
+
+  var items = GOV_OFFICES;
+  if (query) {
+    items = GOV_OFFICES.filter(function(o) {
+      var combined = (o.acronym + ' ' + o.name + ' ' + o.nameF + ' ' +
+        o.services + ' ' + o.summary + ' ' +
+        o.locations.map(function(l){ return l.city + ' ' + l.label; }).join(' ')).toLowerCase();
+      return combined.indexOf(query) !== -1;
+    });
+  }
+
+  countEl.textContent = items.length + ' ' + (t ? 'ministere(s) trouve(s)' : 'office(s) found');
+
+  if (items.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:#5A7060;text-align:center;padding:16px 0">' +
+      (t ? 'Aucun ministere trouve.' : 'No offices found. Try a different keyword.') + '</p>';
+    return;
+  }
+
+  list.innerHTML = items.map(function(o) {
+    var idx = GOV_OFFICES.indexOf(o);
+    var isOpen = expandedGovOffice === idx;
+    var name = t ? (o.nameF || o.name) : o.name;
+    var summary = t ? (o.summaryF || o.summary) : o.summary;
+    var services = t ? (o.servicesF || o.services) : o.services;
+
+    var locationsHtml = '';
+    if (isOpen) {
+      locationsHtml = o.locations.map(function(loc) {
+        var phoneBtn = loc.phone
+          ? ('<button style="background:#1A6B47;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px;margin-right:6px" onclick="callNum(this.dataset.n)" data-n="' + loc.phone.replace(/ /g,'') + '">📞 ' + loc.phone + '</button>')
+          : '';
+        var emailBtn = loc.email
+          ? ('<button style="background:#e8f0fe;color:#1a73e8;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px" onclick="mailTo(this.dataset.e)" data-e="' + loc.email + '">✉ Email</button>')
+          : '';
+        return '<div style="background:#f0f6f2;border-radius:8px;padding:8px 10px;margin-bottom:6px">' +
+          '<div style="font-size:12px;font-weight:700;color:#0A3D2B">' + escapeHtml(loc.city) + ' — ' + escapeHtml(loc.label) + '</div>' +
+          '<div style="font-size:10px;font-weight:600;color:#C8A84B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">' + escapeHtml(loc.type) + '</div>' +
+          phoneBtn + emailBtn +
+        '</div>';
+      }).join('');
+    }
+
+    return '<div style="background:#f8fbf9;border:1px solid #D6E5D8;border-radius:14px;width:100%">' +
+      '<div onclick="toggleGovOffice(' + idx + ')" style="padding:14px;cursor:pointer">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between">' +
+          '<div style="flex:1">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+              '<span style="font-size:20px">' + o.icon + '</span>' +
+              '<span style="font-size:12px;font-weight:700;color:#C8A84B;letter-spacing:1px">' + escapeHtml(o.acronym) + '</span>' +
+            '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#0A3D2B;margin-bottom:4px">' + escapeHtml(name) + '</div>' +
+            '<div style="font-size:12px;color:#5A7060;line-height:1.5">' + escapeHtml(summary) + '</div>' +
+          '</div>' +
+          '<div style="font-size:18px;font-weight:700;color:#5A7060;margin-left:8px;flex-shrink:0">' + (isOpen ? '-' : '+') + '</div>' +
+        '</div>' +
+      '</div>' +
+      (isOpen ? (
+        '<div style="padding:0 14px 14px;border-top:1px solid #D6E5D8">' +
+          '<div style="margin-top:12px;margin-bottom:8px">' +
+            '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + (t ? 'SERVICES DISPONIBLES' : 'SERVICES AVAILABLE') + '</div>' +
+            '<div style="font-size:12px;color:#0D1F17;line-height:1.6">' + escapeHtml(services) + '</div>' +
+          '</div>' +
+          '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">' + (t ? 'BUREAUX & CONTACTS' : 'OFFICES & CONTACTS') + '</div>' +
+          locationsHtml +
+        '</div>'
+      ) : '') +
+    '</div>';
+  }).join('');
+}
+
+function toggleGovOffice(idx) {
+  expandedGovOffice = expandedGovOffice === idx ? null : idx;
+  renderGovOfficesList(document.getElementById('govOfficesSearch').value);
+}
+
 function renderServices() {
-  const t = state.lang === 'FR';
-  const list = document.getElementById('servicesList');
-  list.innerHTML = SERVICES.map(svc => `
-    <div class="service-card">
-      <div class="service-icon">${svc.icon}</div>
-      <div class="service-info">
-        <div class="title">${t ? svc.titleF : svc.title}</div>
-        <div class="desc">${t ? svc.descF : svc.desc}</div>
-      </div>
-      <div class="service-arrow">›</div>
-    </div>
-  `).join('');
+  var t = state.lang === 'FR';
+  var list = document.getElementById('servicesList');
+  list.innerHTML = SERVICES.map(function(svc) {
+    var onclick = svc.action ? 'onclick="' + svc.action + '()"' : '';
+    return '<div class="service-card" ' + onclick + ' style="' + (svc.action ? 'cursor:pointer' : '') + '">' +
+      '<div class="service-icon">' + svc.icon + '</div>' +
+      '<div class="service-info">' +
+        '<div class="title">' + (t ? svc.titleF : svc.title) + '</div>' +
+        '<div class="desc">' + (t ? svc.descF : svc.desc) + '</div>' +
+      '</div>' +
+      '<div class="service-arrow">›</div>' +
+    '</div>';
+  }).join('');
 }
 
 // ─────────────────────────────────────────────
@@ -2332,8 +3145,20 @@ function renderApp() {
   document.getElementById('drawer-danger-label').textContent = "Danger / SOS";
   document.getElementById('drawer-categories-label').textContent = t ? "Catégories" : "Categories";
   document.getElementById('drawer-penalcode-label').textContent = t ? "Code Pénal" : "Penal Code";
-  document.getElementById('drawer-gov-label').textContent = t ? "Bureaux Gouvernementaux" : "Government Offices";
-  document.getElementById('drawer-rights-label').textContent = t ? "ONG Droits de l'Homme" : "Human Rights Orgs";
+  document.getElementById('drawer-gov-label').textContent = t ? "Vos Droits" : "Your Rights";
+  if (document.getElementById('govOfficesTitle')) {
+    document.getElementById('govOfficesTitle').textContent = "🏛 " + (t ? "Bureaux Gouvernementaux" : "Government Offices");
+    document.getElementById('govOfficesSub').textContent = t
+      ? "Trouvez le bon ministere, ses services et ou aller."
+      : "Find the right ministry, what it does, and where to go.";
+    document.getElementById('govOfficesSearch').placeholder = t
+      ? "Chercher par nom, service ou localisation..."
+      : "Search by ministry name, service, or location...";
+  }
+  if (document.getElementById('govOfficesOverlay') && document.getElementById('govOfficesOverlay').classList.contains('open')) {
+    renderGovOfficesList(document.getElementById('govOfficesSearch').value);
+  }
+  document.getElementById('drawer-rights-label').textContent = t ? "Vos Devoirs" : "Your Duties";
   document.getElementById('drawer-legal-label').textContent = t ? "Centres d'Aide Juridique" : "Legal Aid Centres";
   document.getElementById('drawer-counselors-label').textContent = t ? "Conseillers" : "Counselors";
   document.getElementById('drawer-signup-label').textContent = t ? "Inscription / Connexion" : "Sign Up / Login";
@@ -2354,5 +3179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+
+
 </body>
 </html>
