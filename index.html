@@ -234,6 +234,7 @@ button { touch-action: manipulation; }
 .advice-trigger .avatar {
   width: 36px; height: 36px; border-radius: 50%; background: var(--green-mid);
   display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+  color: #fff;
 }
 .advice-trigger .placeholder-text { font-size: 15px; color: #aaa; }
 .advice-composer { display: none; flex-direction: column; gap: 12px; }
@@ -242,7 +243,7 @@ button { touch-action: manipulation; }
 .advice-composer-top .avatar {
   width: 36px; height: 36px; border-radius: 50%; background: var(--green-mid);
   display: flex; align-items: center; justify-content: center; font-size: 16px;
-  flex-shrink: 0; margin-top: 4px;
+  flex-shrink: 0; margin-top: 4px; color: #fff;
 }
 #adviceInput {
   flex: 1; background: #fff; border: none; border-radius: 14px; padding: 14px 16px;
@@ -2628,7 +2629,7 @@ function renderMedicalFacilities(query) {
     if (filtered.length > 0) facilities = filtered;
   }
 
-  label.textContent = query
+  label.innerHTML = query
     ? (t ? 'Résultats de recherche' : 'Search Results')
     : ('<i class="ri-map-pin-line"></i> ' + (t ? 'Etablissements medicaux pres de vous' : 'Medical Facilities Near You') + (userRegion && !query ? ' — ' + userRegion : ''));
 
