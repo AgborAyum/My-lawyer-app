@@ -336,7 +336,11 @@ button { touch-action: manipulation; }
 .incident-upload-btn .icon i { font-size: 20px; }
 .drawer-item .icon i   { font-size: 20px; }
 #splashSub .icon i     { font-size: 42px; }
-.scales i              { font-size: 1em; vertical-align: middle; }
+/* Fix: service card icon (green bg) — force white stroke on injected SVGs */
+.service-icon .icon-svg { stroke: #fff !important; color: #fff; }
+.service-icon i { color: #fff; }
+/* Modal h2 icon — match the green title color */
+.modal h2 .icon-svg { stroke: var(--green); color: var(--green); }
 .avatar i              { font-size: 28px; color: var(--muted); }
 .service-icon i        { font-size: 22px; color: #fff; }
 /* Make brand scales icon inline */
@@ -1046,6 +1050,42 @@ i[class*="ri-"] { display: inline-block; }
   </div>
 </div>
 
+<!-- ═══════════════ HUMAN RIGHTS ORGS MODAL ═══════════════ -->
+<div class="overlay" id="humanRightsOverlay" onclick="closeHumanRightsOrgs(event)">
+  <div class="modal" style="max-height:92vh">
+    <div class="modal-handle"></div>
+    <h2 id="humanRightsTitle"><i class="ri-boxing-line"></i> Human Rights & Civil Society Orgs</h2>
+    <p class="modal-sub" id="humanRightsSub">Credible human rights and civil-society organizations across Cameroon.</p>
+    <input class="form-input" id="humanRightsSearch"
+      placeholder="Search by name, focus area, or location..."
+      oninput="renderHumanRightsList(this.value)"
+      style="margin-bottom:10px"/>
+    <div id="humanRightsCount" style="font-size:11px;font-weight:700;color:#5A7060;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px"></div>
+    <div id="humanRightsList" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding-right:2px"></div>
+    <button class="cancel-btn" onclick="closeHumanRightsOrgs()" style="margin-top:14px">Close</button>
+  </div>
+</div>
+
+<!-- ═══════════════ ROAD SAFETY OVERLAY ═══════════════ -->
+<div class="overlay" id="roadSafetyOverlay" onclick="closeRoadSafety(event)">
+  <div class="modal" style="max-height:92vh">
+    <div class="modal-handle"></div>
+    <h2 id="roadSafetyTitle"><i class="ri-road-map-line"></i> Road Safety Rules</h2>
+    <p class="modal-sub" id="roadSafetySub">Official rules from the Gendarmerie Nationale of Cameroon — highways, fines &amp; safe driving.</p>
+
+    <input class="form-input" id="roadSafetySearch" type="text"
+      placeholder="Search rules... e.g. speed, overtaking, fine"
+      oninput="renderRoadSafetyList(this.value)"
+      style="margin-bottom:14px" />
+
+    <div id="roadSafetyCount" style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase"></div>
+
+    <div id="roadSafetyList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto"></div>
+
+    <button class="cancel-btn" id="closeRoadSafetyBtn" onclick="closeRoadSafety()" style="margin-top:14px">Close</button>
+  </div>
+</div>
+
 <!-- ═══════════════ DRAWER ═══════════════ -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 <div class="drawer" id="drawer">
@@ -1084,9 +1124,9 @@ i[class*="ri-"] { display: inline-block; }
       <span class="icon"><i class="ri-scales-3-line"></i></span>
       <span class="label" id="drawer-legal-label">Legal Aid Centres</span>
     </div>
-    <div class="drawer-item" onclick="toggleDrawer();navTo('services')">
-      <span class="icon"><i class="ri-hand-heart-line"></i></span>
-      <span class="label" id="drawer-counselors-label">Counselors</span>
+    <div class="drawer-item" onclick="toggleDrawer();openRoadSafety()">
+      <span class="icon"><i class="ri-road-map-line"></i></span>
+      <span class="label" id="drawer-roadsafety-label">Road Safety Rules</span>
     </div>
     <div class="drawer-item" onclick="toggleDrawer();openSignup()">
       <span class="icon"><i class="ri-user-line"></i></span>
@@ -1105,8 +1145,8 @@ i[class*="ri-"] { display: inline-block; }
 const ICON_SVG_BODIES = {
   "ri-alarm-warning-fill": `<path d="M12 3 L21 19 H3 Z" fill="currentColor" stroke="none"/><line x1="12" y1="10" x2="12" y2="13.5" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="16" r="0.9" fill="#fff" stroke="none"/>`,
   "ri-alarm-warning-line": `<path d="M12 3 L21 19 H3 Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="16.7" r="0.6" fill="currentColor" stroke="none"/>`,
+  "ri-road-map-line": `<path d="M3 5l6 2 6-2 6 2v14l-6-2-6 2-6-2V5z"/><line x1="9" y1="7" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="17"/>`,
   "ri-bank-line": `<path d="M3 21h18M4 21V10M20 21V10M3 10l9-6 9 6M7 10v7M11 10v7M13 10v7M17 10v7"/>`,
-  "ri-bar-chart-line": `<line x1="4" y1="20" x2="4" y2="10"/><line x1="10" y1="20" x2="10" y2="4"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="3" y1="21" x2="21" y2="21"/>`,
   "ri-bear-smile-line": `<circle cx="8" cy="9" r="1.6"/><circle cx="12" cy="7" r="1.6"/><circle cx="16" cy="9" r="1.6"/><path d="M7 14c0-2.5 2-4 5-4s5 1.5 5 4-2.2 3-5 3-5-0.5-5-3z"/>`,
   "ri-book-2-line": `<path d="M4 4h6a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h6z"/>`,
   "ri-book-open-line": `<path d="M4 4h6a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h6z"/>`,
@@ -1331,6 +1371,18 @@ const MEDICAL_FACILITIES = [
     services: "General medicine, obstetrics, paediatrics, laboratory, pharmacy, outpatient & emergency services",
     phone: "+237 675103020", phone2: "+237 678462544",
     email: ""
+  },
+  {
+    name: "Mount Mary Hospital",
+    type: "Hospital", typeF: "Hôpital",
+    region: "South West Region", town: "Buea (Small Soppo)",
+    services: "Medical, surgical, laboratory, antenatal & infant welfare clinic (ANC/IWC), delivery, X-ray & echography, ophthalmology, dermatology, mortuary, pharmacy, ICU, gynaecology, hospitalisation",
+    phone: "+237 696699966", phone2: "+237 670733184", phone3: "+237 695255188",
+    email: "",
+    address: "Small Soppo, Buea (Plus Code: 565R+33M)",
+    website: "www.mountmaryhospitalbuea.org",
+    po_box: "P.O. Box 128, Buea",
+    motto: "We treat but God heals"
   },
 
   // ── WEST REGION
@@ -1636,7 +1688,7 @@ const MEDICAL_FACILITIES = [
 // ── Services Directory
 const SERVICES = [
   { icon:'<i class="ri-bank-line"></i>', title:"Government Offices", titleF:"Bureaux Gouvernementaux", desc:"36 ministries — find the right office, their services, and locations.", descF:"36 ministeres — trouvez le bon bureau, ses services et ses emplacements.", action:"openGovOffices" },
-  { icon:'<i class="ri-boxing-line"></i>', title:"Human Rights Orgs",      titleF:"ONG des Droits de l'Homme", desc:"CNDHL, REDHAC, Mandela Center, HRW Cameroon, Nouveaux Droits de l'Homme.", descF:"CNDHL, REDHAC, Mandela Center, HRW Cameroun." },
+  { icon:'<i class="ri-boxing-line"></i>', title:"Human Rights Orgs",      titleF:"ONG des Droits de l'Homme", desc:"23 verified human rights & civil-society organizations with contacts and locations.", descF:"23 organisations verifiees des droits humains et de la societe civile, avec contacts et emplacements.", action:"openHumanRightsOrgs" },
   { icon:'<i class="ri-plant-line"></i>', title:"Environment & Land",     titleF:"Environnement & Foncier", desc:"MINFOF, CED, land rights advocacy groups and environmental civil societies.", descF:"MINFOF, CED, groupes de défense des droits fonciers." },
   { icon:'<i class="ri-scales-3-line"></i>', title:"Legal Aid Centres",    titleF:"Centres d'Aide Juridique", desc:"Free or subsidised legal assistance offices across Cameroon.", descF:"Assistance juridique gratuite ou subventionnée à travers le Cameroun." },
   { icon:'<i class="ri-hand-heart-line"></i>', title:"Counselors",        titleF:"Conseillers", desc:"Marriage & Civil Status Counselors, Mental Health Counselors, Family Mediators.", descF:"Conseillers en mariage, en santé mentale et médiateurs familiaux." },
@@ -2385,6 +2437,220 @@ const GOV_OFFICES = [
   }
 ];
 
+// ── Human Rights Organizations — Verified Cameroonian Civil Society / NGOs
+// Only organisations with a publicly verifiable phone number and/or email are listed.
+const HUMAN_RIGHTS_ORGS = [
+  {
+    acronym: "CNDHL",
+    name: "National Commission on Human Rights and Freedoms",
+    nameF: "Commission Nationale des Droits de l'Homme et des Libertes",
+    summary: "Cameroon's official national human rights institution. Receives and investigates complaints of human rights violations, inspects prisons and detention facilities, and promotes human rights instruments and education nationwide.",
+    summaryF: "Institution nationale officielle des droits de l'homme du Cameroun. Recoit et enquete sur les denonciations de violations, inspecte les prisons et lieux de detention, et fait la promotion des instruments et de l'education aux droits de l'homme.",
+    city: "Yaounde", address: "Parc Repiquet, SGBC Building, 2nd Floor, P.O. Box 20317, Yaounde",
+    phone: "+237 222 22 61 17", email: ""
+  },
+  {
+    acronym: "REDHAC",
+    name: "Central Africa Human Rights Defenders Network",
+    nameF: "Reseau des Defenseurs des Droits Humains en Afrique Centrale",
+    summary: "Protects and supports human rights defenders and journalists across Central Africa, including Cameroon. Provides emergency assistance, legal support, and advocacy for activists and reporters under threat.",
+    summaryF: "Protege et soutient les defenseurs des droits humains et journalistes en Afrique centrale, y compris au Cameroun. Fournit une assistance d'urgence, un appui juridique et un plaidoyer pour les militants et journalistes menaces.",
+    city: "Douala", address: "17 Rue 1108, Bali, behind Total Njo-Njo, Douala",
+    phone: "+237 697 618 195", email: "directriceexecutive@redhac.info"
+  },
+  {
+    acronym: "NDH-Cameroun",
+    name: "Nouveaux Droits de l'Homme Cameroun",
+    nameF: "Nouveaux Droits de l'Homme Cameroun",
+    summary: "NGO with UN consultative status working to promote, defend, and extend human rights across Cameroon, with a focus on gender-based violence, access to justice, and civic space.",
+    summaryF: "ONG avec statut consultatif a l'ONU oeuvrant pour la promotion, la defense et l'extension des droits de l'homme au Cameroun, avec un accent sur les violences basees sur le genre, l'acces a la justice et l'espace civique.",
+    city: "Yaounde", address: "32 Rue Polyclinique Bastos, B.P. 4063, Yaounde",
+    phone: "+237 22 01 12 47", email: "ndhcam@yahoo.fr"
+  },
+  {
+    acronym: "ACAT-Cameroun",
+    name: "Action des Chretiens pour l'Abolition de la Torture — Cameroun",
+    nameF: "Action des Chretiens pour l'Abolition de la Torture — Cameroun",
+    summary: "Fights for the abolition of torture, the death penalty, and enforced disappearances in Cameroon. Provides psychosocial support to victims and documents prison and detention conditions.",
+    summaryF: "Lutte pour l'abolition de la torture, de la peine de mort et des disparitions forcees au Cameroun. Fournit un soutien psychosocial aux victimes et documente les conditions de detention.",
+    city: "Douala", address: "758 Boulevard de la Reunification, Feux-Rouges Bessengue, Immeuble Aziccul, B.P. 3026, Douala",
+    phone: "", email: "acat.cameroun@yahoo.com"
+  },
+
+  // ── Additional Civil-Society Organizations — researched & verified
+  {
+    acronym: "Reach Out",
+    name: "Reach Out Cameroon (REO)",
+    nameF: "Reach Out Cameroun (REO)",
+    summary: "Women-led NGO founded in 1996, born out of the HIV epidemic in the South West Region. Runs three programmes: Health (HIV, sexual & reproductive health, malaria, TB), Human Rights & Governance (case management for survivors of violence, peacebuilding), and Wealth Creation (microfinance, entrepreneurship for women and youth).",
+    summaryF: "ONG dirigee par des femmes, fondee en 1996 pendant l'epidemie de VIH dans la region du Sud-Ouest. Gere trois programmes: Sante (VIH, sante sexuelle, paludisme, tuberculose), Droits Humains & Gouvernance (prise en charge des survivants de violences, consolidation de la paix), et Creation de Richesse (microfinance, entrepreneuriat pour femmes et jeunes).",
+    city: "Buea", address: "Chief's Street, Wonganga, Small Soppo, P.O. Box 88, Buea, South West Region",
+    phone: "+237 677 40 56 02", email: ""
+  },
+  {
+    acronym: "CYSD",
+    name: "Centre for Youths and Sustainable Development",
+    nameF: "Centre pour la Jeunesse et le Developpement Durable",
+    summary: "Community-based organization registered in 2019, empowering youth, women, and children in the South West Region through education programmes for out-of-school children, health outreach, WASH (water/sanitation) projects, and child protection support for conflict-affected communities.",
+    summaryF: "Organisation communautaire enregistree en 2019, autonomisant les jeunes, les femmes et les enfants dans la region du Sud-Ouest par des programmes d'education pour enfants non scolarises, des actions de sante, des projets WASH (eau/assainissement) et une protection de l'enfance dans les zones touchees par le conflit.",
+    city: "Buea", address: "Buea, South West Region",
+    phone: "+237 674 679 298", email: "info@cysdcam.org"
+  },
+  {
+    acronym: "LOYOC",
+    name: "Local Youth Corner Cameroon",
+    nameF: "Local Youth Corner Cameroun",
+    summary: "Youth-led peacebuilding organization founded in 2002, working on countering violent extremism, conflict prevention, and rehabilitation of conflict-affected youth. Runs the Salaam School Initiative for children displaced by violence and the Youth, Peace & Security Resource Center in Yaounde.",
+    summaryF: "Organisation de consolidation de la paix dirigee par des jeunes, fondee en 2002, oeuvrant contre l'extremisme violent, la prevention des conflits et la rehabilitation des jeunes affectes. Gere l'Initiative Salaam pour les enfants deplaces par la violence et le Centre de Ressources Jeunesse, Paix et Securite a Yaounde.",
+    city: "Yaounde", address: "Yaounde, Centre Region (also offices in Buea, Bamenda, Maroua)",
+    phone: "+237 650 906 256", email: "info@loyocameroon.org"
+  },
+  {
+    acronym: "Bridgers",
+    name: "Bridgers Association Cameroon",
+    nameF: "Association Bridgers Cameroun",
+    summary: "Registered in 2016, UN ECOSOC-accredited NGO championing women's and girls' empowerment against gender-based violence. Provides WASH projects, sexual & reproductive health education, agricultural livelihood training, and economic-independence support for vulnerable women.",
+    summaryF: "ONG enregistree en 2016, accreditee a l'ECOSOC de l'ONU, defendant l'autonomisation des femmes et des filles contre les violences basees sur le genre. Fournit des projets WASH, une education a la sante sexuelle et reproductive, une formation agricole et un soutien a l'independance economique des femmes vulnerables.",
+    city: "Yaounde", address: "P.O Box 5282, Nkolmbong, Yaounde",
+    phone: "+237 677 334 678", email: "infos@bridgersngo.org"
+  },
+  {
+    acronym: "AMEF",
+    name: "Authentique Memorial Empowerment Foundation",
+    nameF: "Fondation Authentique Memorial Empowerment",
+    summary: "National NGO founded in 2006 (legalized 2008) protecting the rights of the girl child and women trapped in early/forced marriages — born from research into the 'Money Woman' practice in Akwaya. Operates in education, child protection, gender-based violence response, and livelihoods across four regions.",
+    summaryF: "ONG nationale fondee en 2006 (legalisee en 2008) protegeant les droits de la fillette et des femmes prises au piege des mariages precoces/forces — nee d'une recherche sur la pratique de la 'Money Woman' a Akwaya. Intervient dans l'education, la protection de l'enfance, la lutte contre les violences basees sur le genre et les moyens de subsistance dans quatre regions.",
+    city: "Kumba", address: "Authentique House, P.O. Box 317, Mbonge Road, Kumba, South West Region",
+    phone: "+237 651 193 662", email: ""
+  },
+  {
+    acronym: "WAA Cameroon",
+    name: "Women in Alternative Action",
+    nameF: "Femmes en Action Alternative",
+    summary: "Founded in 2004, this NGO promotes communities free from gender-based violence and works to end child marriage and FGM. Coordinates the Cameroon National Coalition to End Child Marriage and runs peacebuilding programmes including 'Queens for Peace' and 'Kids for Peace' for women, girls, and youth.",
+    summaryF: "Fondee en 2004, cette ONG promeut des communautes libres de violences basees sur le genre et lutte contre le mariage des enfants et les MGF. Coordonne la Coalition Nationale Camerounaise pour Mettre Fin au Mariage des Enfants et gere des programmes de consolidation de la paix dont 'Queens for Peace' et 'Kids for Peace'.",
+    city: "Yaounde", address: "Biyem-Assi, Yaounde",
+    phone: "+237 675 518 161", email: ""
+  },
+  {
+    acronym: "AWEC",
+    name: "Association for Women Empowerment Cameroon",
+    nameF: "Association pour l'Autonomisation des Femmes Cameroun",
+    summary: "Supports communities facing extreme poverty through vocational training (sewing, agribusiness, handicrafts), child-protection and gender-based-violence education, mental-health awareness campaigns, and counselling support for women and girls.",
+    summaryF: "Soutient les communautes confrontees a l'extreme pauvrete par des formations professionnelles (couture, agro-business, artisanat), une education sur la protection de l'enfance et les violences basees sur le genre, des campagnes de sensibilisation a la sante mentale et un soutien psychologique pour les femmes et les filles.",
+    city: "Buea", address: "Buea, South West Region",
+    phone: "+237 680 383 036", email: "awec.global@gmail.com"
+  },
+  {
+    acronym: "TCA",
+    name: "Trustful Charity Association",
+    nameF: "Association Caritative Trustful",
+    summary: "Founded in 2008 to help street children in Yaounde; now operates in 8 regions on food assistance, education support (school construction, scholarships), mobile medical clinics, clean-water wells, housing/shelter, and small-business/microfinance support.",
+    summaryF: "Fondee en 2008 pour aider les enfants de la rue a Yaounde; opere desormais dans 8 regions sur l'aide alimentaire, le soutien a l'education (construction d'ecoles, bourses), les cliniques medicales mobiles, les puits d'eau potable, le logement/abri et le soutien aux petites entreprises/microfinance.",
+    city: "Yaounde", address: "Rond-point Express, Biyem-Assi, Yaounde",
+    phone: "+237 678 671 841", email: "trustfulcharity2024@gmail.com"
+  },
+  {
+    acronym: "Femina Intl",
+    name: "Femina International",
+    nameF: "Femina International",
+    summary: "Provides training and advocacy on combating violence against women, with particular attention to the economic impact of gender-based violence on rural women and women with disabilities. Organizes free training sessions and conferences on gender and counselling.",
+    summaryF: "Fournit des formations et un plaidoyer sur la lutte contre les violences faites aux femmes, avec une attention particuliere a l'impact economique des violences basees sur le genre sur les femmes rurales et les femmes handicapees. Organise des sessions de formation gratuites et des conferences sur le genre et le counselling.",
+    city: "Yaounde", address: "B.P. 14328, Yaounde",
+    phone: "+237 22 60 77 64", email: "feminainternational@yahoo.fr"
+  },
+  {
+    acronym: "Green Cameroon",
+    name: "Green Cameroon",
+    nameF: "Green Cameroon",
+    summary: "Environmental NGO founded in 2003 on the slopes of Mount Cameroon, working on biodiversity conservation, sustainable agriculture, fuel-efficient stoves, and environmental education — having supported over 100 school environmental clubs since 2006. Winner of the 2012 National Energy Globe Award for Sustainability.",
+    summaryF: "ONG environnementale fondee en 2003 sur les flancs du Mont Cameroun, oeuvrant pour la conservation de la biodiversite, l'agriculture durable, les foyers ameliores et l'education environnementale — ayant soutenu plus de 100 clubs environnementaux scolaires depuis 2006. Laureate du Energy Globe Award National 2012 pour la durabilite.",
+    city: "Buea", address: "Buea Town, P.O. Box 96, Buea, South West Region",
+    phone: "+237 7775 6881", email: "info@greencameroon.org"
+  },
+  {
+    acronym: "GVC",
+    name: "Global Village Cameroon",
+    nameF: "Village Global Cameroun",
+    summary: "Environmental NGO created in May 1996, working on environmental protection and sustainable development across Cameroon while fighting the marginalization of vulnerable groups (women, children, persons with disabilities, displaced persons, and refugees) through ecological action.",
+    summaryF: "ONG environnementale creee en mai 1996, oeuvrant pour la protection de l'environnement et le developpement durable a travers le Cameroun tout en luttant contre la marginalisation des groupes vulnerables (femmes, enfants, personnes handicapees, deplaces et refugies) par l'action ecologique.",
+    city: "Yaounde", address: "Yaounde, Centre Region",
+    phone: "+237 2222 4331", email: "globavillage@camnet.cm"
+  },
+  {
+    acronym: "ACERCD",
+    name: "Action Centre for Rural Community Development",
+    nameF: "Centre d'Action pour le Developpement Communautaire Rural",
+    summary: "Rural development NGO founded in 1999, promoting agriculture, livestock, aquaculture, environmental management, microfinance, health, and microenterprise development among women and youth, with the aim of alleviating poverty and guaranteeing food security.",
+    summaryF: "ONG de developpement rural fondee en 1999, promouvant l'agriculture, l'elevage, l'aquaculture, la gestion environnementale, la microfinance, la sante et le developpement de la microentreprise chez les femmes et les jeunes, dans le but de reduire la pauvrete et garantir la securite alimentaire.",
+    city: "Buea", address: "P.O. Box 342, Buea, South West Region",
+    phone: "+237 332 21 06", email: "acercd98@yahoo.com"
+  },
+  {
+    acronym: "AEL",
+    name: "Association Espace Liberte",
+    nameF: "Association Espace Liberte",
+    summary: "NGO focused on drug-abuse prevention, education, and counselling, with a particular emphasis on supporting street children and combating alcoholism. Runs awareness campaigns in cities and rural areas through conferences, radio/TV programmes, and direct counselling.",
+    summaryF: "ONG axee sur la prevention de la toxicomanie, l'education et le counselling, avec un accent particulier sur le soutien aux enfants de la rue et la lutte contre l'alcoolisme. Mene des campagnes de sensibilisation en ville et en zone rurale via conferences, programmes radio/TV et counselling direct.",
+    city: "Douala", address: "P.O. Box 8554, Douala, Littoral Region",
+    phone: "+237 42 57 88", email: "bekombond@yahoo.com"
+  },
+  {
+    acronym: "HOCI",
+    name: "Hope for Children International (HOCI) Cameroon",
+    nameF: "Hope for Children International (HOCI) Cameroun",
+    summary: "Youth-centered community development NGO, officially recognized since December 2014, using sports, education, and mentorship to combat HIV spread, drug/alcohol abuse, and youth unemployment, helping young people transition successfully into responsible adulthood.",
+    summaryF: "ONG de developpement communautaire centree sur la jeunesse, officiellement reconnue depuis decembre 2014, utilisant le sport, l'education et le mentorat pour lutter contre la propagation du VIH, la toxicomanie/alcoolisme et le chomage des jeunes, aidant les jeunes a reussir leur transition vers une adulte responsable.",
+    city: "Yaounde", address: "Mendong, Yaounde",
+    phone: "+237 671 717 103", email: ""
+  },
+  {
+    acronym: "ACDA",
+    name: "Alliance for Community Development Association",
+    nameF: "Alliance pour l'Association de Developpement Communautaire",
+    summary: "Humanitarian and development NGO operating in crisis-affected South West Region communities since 2013 (originally as COGRADEV, renamed ACDA in 2022). Provides food aid, peacebuilding and community recovery support, and promotes environmental conservation and cultural coexistence.",
+    summaryF: "ONG humanitaire et de developpement operant dans les communautes touchees par la crise de la region du Sud-Ouest depuis 2013 (anciennement COGRADEV, renommee ACDA en 2022). Fournit une aide alimentaire, un soutien a la consolidation de la paix et au redressement communautaire, et promeut la conservation environnementale et la coexistence culturelle.",
+    city: "Douala", address: "Douala, Littoral Region",
+    phone: "+237 671 094 067", email: ""
+  },
+  {
+    acronym: "Blissful Hearts",
+    name: "Blissful Hearts Foundation",
+    nameF: "Fondation Blissful Hearts",
+    summary: "Community-driven humanitarian organization providing scholarships, school supplies, and vocational training for education; financial literacy and women's entrepreneurship support; and medical outreach campaigns including sickle-cell awareness, alongside environmental clean-up initiatives.",
+    summaryF: "Organisation humanitaire communautaire fournissant des bourses, du materiel scolaire et une formation professionnelle pour l'education; un soutien a l'education financiere et a l'entrepreneuriat des femmes; et des campagnes medicales incluant la sensibilisation a la drepanocytose, ainsi que des initiatives de nettoyage environnemental.",
+    city: "Buea", address: "Buea, South West Region",
+    phone: "+237 678 213 763", email: ""
+  },
+  {
+    acronym: "YBC",
+    name: "Youth Business Cameroon",
+    nameF: "Youth Business Cameroun",
+    summary: "Youth entrepreneurship incubator and accelerator founded in July 2005, providing business-plan training, mentoring, coaching, leadership development, and networking to transform unemployed young people — especially young women — into successful job creators.",
+    summaryF: "Incubateur et accelerateur d'entrepreneuriat jeunesse fonde en juillet 2005, offrant une formation au plan d'affaires, du mentorat, du coaching, un developpement du leadership et du reseautage pour transformer les jeunes chomeurs — en particulier les jeunes femmes — en createurs d'emplois.",
+    city: "Douala", address: "Douala, Littoral Region",
+    phone: "+237 677 64 06 26", email: "contact@youthbusinesscameroon.org"
+  },
+  {
+    acronym: "YOP",
+    name: "Youth Outreach Programme Cameroon",
+    nameF: "Programme de Sensibilisation des Jeunes Cameroun",
+    summary: "Youth association founded in 1993, running four programme areas: Adolescent Sexual & Reproductive Health, Community Education & Empowerment, Good Governance & Human Rights (including access-to-justice support), and Media & Communication — reaching over 10,000 young people across the North West Region.",
+    summaryF: "Association de jeunesse fondee en 1993, gerant quatre domaines de programme: Sante Sexuelle et Reproductive des Adolescents, Education et Autonomisation Communautaire, Bonne Gouvernance et Droits Humains (incluant l'acces a la justice), et Medias et Communication — touchant plus de 10 000 jeunes dans la region du Nord-Ouest.",
+    city: "Bamenda", address: "Ryan White House, Mile 1 Road, Bamendakwe-Up Station, P.O. Box 5185, Nkwen, Bamenda, North West Region",
+    phone: "+237 2 43 00 42 88", email: "program.youth@gmail.com"
+  },
+  {
+    acronym: "VIAC",
+    name: "Vision in Action Cameroon",
+    nameF: "Vision in Action Cameroun",
+    summary: "Community-based organization founded in 2007 (registered 2014) that enables adolescent girls and young women to advance sexual and reproductive health rights through a human-rights approach — covering adolescent health, STIs, leadership, and gender education.",
+    summaryF: "Organisation communautaire fondee en 2007 (enregistree en 2014) qui permet aux adolescentes et jeunes femmes de faire progresser les droits a la sante sexuelle et reproductive via une approche fondee sur les droits humains — couvrant la sante des adolescents, les IST, le leadership et l'education sur le genre.",
+    city: "Buea", address: "Molyko, Buea, South West Region (project office in Bamenda)",
+    phone: "+237 620 788 578", email: ""
+  }
+];
+
 
 /* ═══════════════════════════════════════════════════════
    MyLawyer — Main Application Logic
@@ -2413,26 +2679,24 @@ function runSplash() {
     setTimeout(() => el.classList.add('show'), i * 150);
   });
 
-  const afterSpin = total * 150 + 500;
+  const afterSpin = total * 150 + 300;
   let waveDelay = afterSpin;
 
-  // Phase 2: wave x2
-  for (let pass = 0; pass < 2; pass++) {
-    letters.forEach((el, i) => {
-      setTimeout(() => {
-        el.classList.add('wave');
-        setTimeout(() => el.classList.remove('wave'), 180);
-      }, waveDelay + i * 80);
-    });
-    waveDelay += total * 80 + 400;
-  }
+  // Phase 2: wave ONCE only — time is critical in an emergency app
+  letters.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('wave');
+      setTimeout(() => el.classList.remove('wave'), 180);
+    }, waveDelay + i * 80);
+  });
+  waveDelay += total * 80 + 200;
 
   // Phase 3: subtitle
   setTimeout(() => sub.classList.add('show'), waveDelay);
 
-  // Phase 4: fade out + remove
-  setTimeout(() => splash.classList.add('fadeout'), waveDelay + 900);
-  setTimeout(() => { splash.style.display = 'none'; }, waveDelay + 1400);
+  // Phase 4: fade out + remove — subtitle stays visible for 2.5s before fading
+  setTimeout(() => splash.classList.add('fadeout'), waveDelay + 2500);
+  setTimeout(() => { splash.style.display = 'none'; }, waveDelay + 3000);
 }
 
 // ─────────────────────────────────────────────
@@ -2643,23 +2907,47 @@ function renderMedicalFacilities(query) {
 
   list.innerHTML = facilities.map(function(f) {
     var p2 = f.phone2 ? f.phone2.replace(/ /g,'') : '';
-    var phone2Btn = f.phone2
-      ? ('<button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="callNum(this.dataset.n)" data-n="' + p2 + '"><i class=\"ri-phone-line\"></i> ' + f.phone2 + '</button>')
+    var p3 = f.phone3 ? f.phone3.replace(/ /g,'') : '';
+
+    // Primary phone button (always shown)
+    var phoneBtn = '<button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="callNum(this.dataset.n)" data-n="' + f.phone.replace(/ /g,'') + '"><i class=\"ri-phone-line\"></i> ' + f.phone + '</button>';
+
+    // Second contact: phone2 or email
+    var btn2 = f.email
+      ? ('<button style="background:#e8f0fe;color:#1a73e8;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="mailTo(this.dataset.e)" data-e="' + f.email + '">✉ Email</button>')
+      : (f.phone2 ? '<button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="callNum(this.dataset.n)" data-n="' + p2 + '"><i class=\"ri-phone-line\"></i> ' + f.phone2 + '</button>' : '');
+
+    // Third phone button
+    var btn3 = f.phone3
+      ? '<div style="margin-top:6px"><button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;width:100%" onclick="callNum(this.dataset.n)" data-n="' + p3 + '"><i class=\"ri-phone-line\"></i> ' + f.phone3 + '</button></div>'
       : '';
-    var emailBtn = f.email
-      ? ('<button style="background:#e8f0fe;color:#1a73e8;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="mailTo(this.dataset.e)" data-e="' + f.email + '"><i class=\\\"ri-mail-line\\\"></i> Email</button>')
-      : phone2Btn;
+
+    // Address line
+    var addrLine = f.address
+      ? '<div style="font-size:11px;color:#5A7060;margin-bottom:4px">📍 ' + escapeHtml(f.address) + '</div>'
+      : '';
+
+    // Website line
+    var webLine = f.website
+      ? '<div style="font-size:11px;color:#1a73e8;margin-bottom:4px">🌐 <a href="https://' + f.website + '" style="color:#1a73e8;text-decoration:none">' + f.website + '</a></div>'
+      : '';
+
+    // Motto line
+    var mottoLine = f.motto
+      ? '<div style="font-size:11px;font-style:italic;color:#B8860B;margin-bottom:6px">"' + escapeHtml(f.motto) + '"</div>'
+      : '';
 
     return '<div style="background:#fff8e7;border:1px solid #e8d28a;border-radius:12px;padding:12px;margin-bottom:4px">' +
       '<div style="font-size:14px;font-weight:700;color:#0D1F17;margin-bottom:2px">' + escapeHtml(f.name) + '</div>' +
       '<div style="font-size:11px;font-weight:700;color:#B8860B;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px">' +
         escapeHtml(t ? f.typeF : f.type) + ' · ' + escapeHtml(f.town) +
       '</div>' +
+      addrLine +
+      mottoLine +
       (f.services ? '<div style="font-size:12px;color:#5A7060;line-height:1.5;margin-bottom:8px">' + escapeHtml(f.services) + '</div>' : '') +
-      '<div style="display:flex;gap:8px">' +
-        ('<button style="background:#1A6B47;color:#fff;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;flex:1" onclick="callNum(this.dataset.n)" data-n="' + f.phone.replace(/ /g,'') + '"><i class=\"ri-phone-line\"></i> ' + f.phone + '</button>') +
-        emailBtn +
-      '</div>' +
+      webLine +
+      '<div style="display:flex;gap:8px">' + phoneBtn + btn2 + '</div>' +
+      btn3 +
     '</div>';
   }).join('');
 }
@@ -2849,6 +3137,133 @@ function renderPenalCodeList(query) {
 function togglePenalSection(idx) {
   expandedSection = expandedSection === idx ? null : idx;
   renderPenalCodeList(document.getElementById('penalCodeSearch').value);
+}
+
+// ─────────────────────────────────────────────
+// ROAD SAFETY RULES (source: Gendarmerie Nationale of Cameroon)
+// mindef.gov.cm/gendarmerie-nationale/en/highway/
+// mindef.gov.cm/gendarmerie-nationale/en/road-safety/
+// ─────────────────────────────────────────────
+const ROAD_SAFETY = [
+  {
+    h: "What is a Highway?",
+    b: "A highway is a road specially designed and built for fast motor traffic. It consists of two motorway directions separated by a central reservation, or exceptionally by other means. The highway does not cross at level with any road, railway, tramway track or footpath; it does not serve properties bordering on it and has limited access points."
+  },
+  {
+    h: "Who Cannot Use a Highway?",
+    b: "Pedestrians and animals are prohibited on highways. Slow-moving vehicles that cannot reach 80 km/h (construction vehicles, public works machinery, etc.), or vehicles whose engine power is set so their speed cannot exceed 80 km/h, are not allowed on highways."
+  },
+  {
+    h: "Prohibited Actions on a Highway",
+    b: "Highway drivers are NOT allowed to:\n• Make a U-turn\n• Reverse\n• Stop or park their vehicles anywhere other than in marked-out parking areas\n• Go onto the central strip or onto the cross-connections linking both roadways"
+  },
+  {
+    h: "Entering a Highway",
+    b: "When entering a highway:\n• Give way to vehicles already travelling on the highway if there are no acceleration lanes extending from the access road.\n• Use the acceleration lane if there is any — accelerate and merge carefully into traffic."
+  },
+  {
+    h: "Exiting a Highway",
+    b: "The driver leaving the highway must take the lane corresponding to the highway exit in good time and move quickly, if necessary, into the deceleration lane."
+  },
+  {
+    h: "Speed Limits on Highways",
+    b: "• Maximum speed: between 110 km/h and 130 km/h\n• In rainy weather: recommended maximum of 110 km/h\n• Minimum speed: 80 km/h (below this speed, the vehicle becomes a hazard to other road users)\n• Lower speed limits may be imposed in certain areas by traffic signs for safety reasons."
+  },
+  {
+    h: "Lane Discipline",
+    b: "Always drive in the right-hand lane if you are not overtaking. The central and left-hand lanes are reserved for overtaking only. Except in case of traffic jams or tolls, you must not ride in these lanes throughout your journey."
+  },
+  {
+    h: "Overtaking Rules",
+    b: "Overtaking on a highway must be done on the left-hand side only (left-hand lane or central lane). The driver must:\n• Use indicators before overtaking\n• Return to the right-hand lane after overtaking\n• Maintain safe distances during the manoeuvre"
+  },
+  {
+    h: "Safe Following Distance",
+    b: "The safe distance on a highway can be estimated visually by allowing a two-line gap of the right-hand white strip between you and the vehicle in front. If the distance is lower than this estimate, it becomes dangerous — slow down to allow more space."
+  },
+  {
+    h: "What to Do in Case of a Technical Problem",
+    b: "In case of a technical issue requiring a speed reduction:\n• Move immediately to the extreme right-hand lane\n• Activate hazard warning lights to warn other road users and enable them to adjust without risk of accident"
+  },
+  {
+    h: "The Road Safety Campaign",
+    b: "Before the launch of the National Gendarmerie's 'Control–Surveillance–Repression' operation, monthly road accident casualties in Cameroon rose from 107 (2010) to 159 in the first half of 2011. The operation — now in its third generation — uses mobile controls on roads and has achieved a 33% reduction in accidents and a 40% reduction in deaths."
+  },
+  {
+    h: "Specific Missions of the Gendarmerie on Roads",
+    b: "The National Gendarmerie combines prevention, awareness and education with enforcement — particularly cracking down on reckless driving in accordance with the criminal procedure code and CEMAC regulations."
+  },
+  {
+    h: "Second-Category Fines (2,400 FCFA)",
+    b: "Second-category traffic fines are fixed at 2,400 FCFA. These apply to minor traffic offences as defined under Cameroonian road traffic law."
+  },
+  {
+    h: "Third-Category Fines (3,400 FCFA)",
+    b: "Third-category traffic fines are fixed at 3,400 FCFA. These apply to more serious traffic offences as classified under the highway code."
+  },
+  {
+    h: "Fourth-Category Fines (25,000–75,000 FCFA)",
+    b: "Fourth-category fines are fixed at 25,000 FCFA. Under Art. 18(1)(b) of Law No. 96/07 of 8 April 1996 (amended by Law No. 2004/021 of 22 July 2004), fines for overloading extend from 25,000 FCFA to 75,000 FCFA."
+  },
+  {
+    h: "Procedure When Fined by a Traffic Officer",
+    b: "When a traffic officer issues a fine, there are two options under the principle of least constraint:\n1. The road user accepts to pay the fine on the spot — a numbered receipt from the counterfoil book (signed by the relevant state counsel) is issued immediately.\n2. If the road user cannot pay, a report is taken and forwarded to the relevant state counsel."
+  },
+  {
+    h: "Drink-Driving Warning",
+    b: "Driving is a sensory-motor activity that requires the driver to take full responsibility. Drink-driving is classified as a dangerous and deadly feat. Driving after consuming alcohol significantly impairs reaction time, judgement and vehicle control."
+  }
+];
+
+let expandedRoadSafetyIdx = null;
+
+function openRoadSafety() {
+  document.getElementById('roadSafetySearch').value = '';
+  expandedRoadSafetyIdx = null;
+  renderRoadSafetyList('');
+  openOverlay('roadSafetyOverlay');
+}
+function closeRoadSafety(evt) { closeOverlay('roadSafetyOverlay', evt); }
+
+function renderRoadSafetyList(query) {
+  const t = state.lang === 'FR';
+  const list = document.getElementById('roadSafetyList');
+  const countEl = document.getElementById('roadSafetyCount');
+
+  let items = ROAD_SAFETY;
+  if (query && query.trim()) {
+    const q = query.toLowerCase();
+    items = ROAD_SAFETY.filter(s => (s.h + ' ' + s.b).toLowerCase().includes(q));
+  }
+
+  countEl.textContent = items.length + ' ' + (t ? 'règles trouvées' : 'rules found') +
+    (query ? '' : (t ? ` sur ${ROAD_SAFETY.length} au total` : ` of ${ROAD_SAFETY.length} total`));
+
+  if (items.length === 0) {
+    list.innerHTML = `<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">
+      ${t ? 'Aucune règle trouvée.' : 'No rules found.'}
+    </p>`;
+    return;
+  }
+
+  list.innerHTML = items.map(s => {
+    const idx = ROAD_SAFETY.indexOf(s);
+    const isOpen = expandedRoadSafetyIdx === idx;
+    return `
+    <div style="background:#f8fbf9;border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer"
+      onclick="toggleRoadSafetyItem(${idx})">
+      <div style="font-size:13px;font-weight:700;color:var(--green);display:flex;justify-content:space-between;align-items:center">
+        <span>${escapeHtml(s.h)}</span>
+        <span style="font-size:16px;color:var(--muted)">${isOpen ? '−' : '+'}</span>
+      </div>
+      ${isOpen ? `<div style="font-size:13px;color:var(--text);line-height:1.6;margin-top:8px;white-space:pre-wrap">${escapeHtml(s.b)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleRoadSafetyItem(idx) {
+  expandedRoadSafetyIdx = expandedRoadSafetyIdx === idx ? null : idx;
+  renderRoadSafetyList(document.getElementById('roadSafetySearch').value);
 }
 
 function escapeHtml(str) {
@@ -3158,6 +3573,85 @@ function toggleGovOffice(idx) {
   renderGovOfficesList(document.getElementById('govOfficesSearch').value);
 }
 
+// ─────────────────────────────────────────────
+// HUMAN RIGHTS ORGANIZATIONS
+// ─────────────────────────────────────────────
+var expandedHumanRightsOrg = null;
+
+function openHumanRightsOrgs() {
+  document.getElementById('humanRightsSearch').value = '';
+  expandedHumanRightsOrg = null;
+  renderHumanRightsList('');
+  openOverlay('humanRightsOverlay');
+}
+function closeHumanRightsOrgs(evt) { closeOverlay('humanRightsOverlay', evt); }
+
+function renderHumanRightsList(query) {
+  var t = state.lang === 'FR';
+  var list = document.getElementById('humanRightsList');
+  var countEl = document.getElementById('humanRightsCount');
+  query = (query || '').toLowerCase().trim();
+
+  var items = HUMAN_RIGHTS_ORGS;
+  if (query) {
+    items = HUMAN_RIGHTS_ORGS.filter(function(o) {
+      var combined = (o.acronym + ' ' + o.name + ' ' + o.nameF + ' ' +
+        o.summary + ' ' + o.summaryF + ' ' + o.city + ' ' + o.address).toLowerCase();
+      return combined.indexOf(query) !== -1;
+    });
+  }
+
+  countEl.textContent = items.length + ' ' + (t ? 'organisation(s) trouvee(s)' : 'organization(s) found');
+
+  if (items.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:#5A7060;text-align:center;padding:16px 0">' +
+      (t ? 'Aucune organisation trouvee.' : 'No organizations found. Try a different keyword.') + '</p>';
+    return;
+  }
+
+  list.innerHTML = items.map(function(o) {
+    var idx = HUMAN_RIGHTS_ORGS.indexOf(o);
+    var isOpen = expandedHumanRightsOrg === idx;
+    var name = t ? (o.nameF || o.name) : o.name;
+    var summary = t ? (o.summaryF || o.summary) : o.summary;
+
+    var phoneBtn = o.phone
+      ? ('<button style="background:#1A6B47;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px;margin-right:6px" onclick="callNum(this.dataset.n)" data-n="' + o.phone.replace(/ /g,'') + '"><i class="ri-phone-line"></i> ' + o.phone + '</button>')
+      : '';
+    var emailBtn = o.email
+      ? ('<button style="background:#e8f0fe;color:#1a73e8;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px" onclick="mailTo(this.dataset.e)" data-e="' + o.email + '"><i class="ri-mail-line"></i> Email</button>')
+      : '';
+
+    return '<div style="background:#f8fbf9;border:1px solid #D6E5D8;border-radius:14px;width:100%">' +
+      '<div onclick="toggleHumanRightsOrg(' + idx + ')" style="padding:14px;cursor:pointer">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between">' +
+          '<div style="flex:1">' +
+            '<div style="font-size:12px;font-weight:700;color:#C8A84B;letter-spacing:1px;margin-bottom:4px">' + escapeHtml(o.acronym) + '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#0A3D2B;margin-bottom:4px">' + escapeHtml(name) + '</div>' +
+            '<div style="font-size:12px;color:#5A7060;line-height:1.5">' + escapeHtml(summary) + '</div>' +
+          '</div>' +
+          '<div style="font-size:18px;font-weight:700;color:#5A7060;margin-left:8px;flex-shrink:0">' + (isOpen ? '-' : '+') + '</div>' +
+        '</div>' +
+      '</div>' +
+      (isOpen ? (
+        '<div style="padding:0 14px 14px;border-top:1px solid #D6E5D8">' +
+          '<div style="margin-top:12px;margin-bottom:8px">' +
+            '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">' + (t ? 'LOCALISATION' : 'LOCATION') + '</div>' +
+            '<div style="font-size:12px;color:#0D1F17;line-height:1.6">' + escapeHtml(o.address) + ' (' + escapeHtml(o.city) + ')</div>' +
+          '</div>' +
+          '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">' + (t ? 'CONTACT' : 'CONTACT') + '</div>' +
+          '<div>' + phoneBtn + emailBtn + '</div>' +
+        '</div>'
+      ) : '') +
+    '</div>';
+  }).join('');
+}
+
+function toggleHumanRightsOrg(idx) {
+  expandedHumanRightsOrg = expandedHumanRightsOrg === idx ? null : idx;
+  renderHumanRightsList(document.getElementById('humanRightsSearch').value);
+}
+
 function renderServices() {
   var t = state.lang === 'FR';
   var list = document.getElementById('servicesList');
@@ -3172,6 +3666,8 @@ function renderServices() {
       '<div class="service-arrow">›</div>' +
     '</div>';
   }).join('');
+  // Explicitly hydrate icons after dynamic injection to guarantee SVG replacement
+  if (typeof hydrateIcons === 'function') hydrateIcons(list);
 }
 
 // ─────────────────────────────────────────────
@@ -3327,9 +3823,32 @@ function renderApp() {
   if (document.getElementById('govOfficesOverlay') && document.getElementById('govOfficesOverlay').classList.contains('open')) {
     renderGovOfficesList(document.getElementById('govOfficesSearch').value);
   }
+  if (document.getElementById('humanRightsTitle')) {
+    document.getElementById('humanRightsTitle').innerHTML = '<i class="ri-boxing-line"></i> ' + (t ? "ONG des Droits Humains & Societe Civile" : "Human Rights & Civil Society Orgs");
+    document.getElementById('humanRightsSub').textContent = t
+      ? "Organisations credibles des droits humains et de la societe civile a travers le Cameroun."
+      : "Credible human rights and civil-society organizations across Cameroon.";
+    document.getElementById('humanRightsSearch').placeholder = t
+      ? "Chercher par nom, domaine ou localisation..."
+      : "Search by name, focus area, or location...";
+  }
+  if (document.getElementById('humanRightsOverlay') && document.getElementById('humanRightsOverlay').classList.contains('open')) {
+    renderHumanRightsList(document.getElementById('humanRightsSearch').value);
+  }
   document.getElementById('drawer-rights-label').textContent = t ? "Vos Devoirs" : "Your Duties";
   document.getElementById('drawer-legal-label').textContent = t ? "Centres d'Aide Juridique" : "Legal Aid Centres";
-  document.getElementById('drawer-counselors-label').textContent = t ? "Conseillers" : "Counselors";
+  document.getElementById('drawer-roadsafety-label').textContent = t ? "Règles de Sécurité Routière" : "Road Safety Rules";
+  document.getElementById('roadSafetyTitle').innerHTML = '<i class="ri-road-map-line"></i> ' + (t ? "Règles de Sécurité Routière" : "Road Safety Rules");
+  document.getElementById('roadSafetySub').textContent = t
+    ? "Règles officielles de la Gendarmerie Nationale du Cameroun — autoroutes, amendes et conduite sécurisée."
+    : "Official rules from the Gendarmerie Nationale of Cameroon — highways, fines & safe driving.";
+  document.getElementById('roadSafetySearch').placeholder = t
+    ? "Rechercher... ex: vitesse, dépassement, amende"
+    : "Search rules... e.g. speed, overtaking, fine";
+  document.getElementById('closeRoadSafetyBtn').textContent = t ? "Fermer" : "Close";
+  if (document.getElementById('roadSafetyOverlay').classList.contains('open')) {
+    renderRoadSafetyList(document.getElementById('roadSafetySearch').value);
+  }
   document.getElementById('drawer-signup-label').textContent = t ? "Inscription / Connexion" : "Sign Up / Login";
   document.getElementById('drawerSignupBtn').textContent = t ? "S'inscrire — C'est Gratuit" : "Sign Up — It's Free";
 
