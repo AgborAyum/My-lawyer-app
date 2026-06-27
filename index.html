@@ -711,8 +711,12 @@ button, input, textarea, select { font-family: inherit; }
 
 <!-- ═══════════════ DANGER MODAL ═══════════════ -->
 <div class="overlay" id="dangerOverlay" onclick="closeDanger(event)">
-  <div class="modal" style="padding: 20px 22px 24px">
-    <div class="modal-handle"></div>
+  <div class="modal" style="max-height:92vh">
+    <div class="modal-header" style="padding:20px 22px 0;position:relative">
+      <div class="modal-handle"></div>
+      <button onclick="closeDanger()" aria-label="Close" style="position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;font-size:20px;line-height:1;color:var(--muted);padding:4px">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0 22px 22px">
 
     <!-- Step: Choice -->
     <div id="dangerChoice">
@@ -744,54 +748,61 @@ button, input, textarea, select { font-family: inherit; }
       <div class="modal-cat-grid" id="dangerCategoriesGrid"></div>
       <button class="cancel-btn" id="backToChoice" onclick="showDangerStep('choice')">← Back</button>
     </div>
+    </div>
   </div>
 </div>
 
 
 <!-- ═══════════════ INCIDENT MODAL ═══════════════ -->
 <div class="overlay" id="incidentOverlay" onclick="closeIncident(event)">
-  <div class="modal">
-    <div class="modal-handle"></div>
-
-    <div class="incident-header">
-      <span class="icon" id="incidentIcon">🔥</span>
-      <div>
-        <div class="title" id="incidentTitle">Fire Outbreak</div>
-        <div class="sub" id="incidentSub">Upload evidence and contact the unit</div>
+  <div class="modal" style="max-height:92vh">
+    <div class="modal-header">
+      <div class="modal-handle"></div>
+      <div class="incident-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span class="icon" id="incidentIcon">🔥</span>
+          <div>
+            <div class="title" id="incidentTitle">Fire Outbreak</div>
+            <div class="sub" id="incidentSub">Upload evidence and contact the unit</div>
+          </div>
+        </div>
+        <button onclick="closeIncident()" aria-label="Close" style="background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:var(--muted);padding:4px">✕</button>
       </div>
     </div>
 
-    <div class="nearest-unit-box" id="nearestUnitBox">
-      <div class="nearest-unit-label" id="nearestUnitLabel">📍 Nearest Unit in Your Area</div>
-      <div class="nearest-unit-name" id="nearestUnitName">Brigade de Pompiers — Yaoundé Centre</div>
-      <div class="unit-contact-row">
-        <button class="unit-call" id="unitCallBtn"><i class="ph ph-phone"></i> +237 222 22 20 22</button>
-        <button class="unit-email" id="unitEmailBtn">✉️ Email Unit</button>
+    <div class="modal-body">
+      <div class="nearest-unit-box" id="nearestUnitBox">
+        <div class="nearest-unit-label" id="nearestUnitLabel">📍 Nearest Unit in Your Area</div>
+        <div class="nearest-unit-name" id="nearestUnitName">Brigade de Pompiers — Yaoundé Centre</div>
+        <div class="unit-contact-row">
+          <button class="unit-call" id="unitCallBtn"><i class="ph ph-phone"></i> +237 222 22 20 22</button>
+          <button class="unit-email" id="unitEmailBtn">✉️ Email Unit</button>
+        </div>
       </div>
+
+      <textarea id="complaintText" rows="4" placeholder="Describe what is happening, address, any injuries…"></textarea>
+
+      <div class="incident-upload-row">
+        <label class="incident-upload-btn">
+          <span class="icon"><i class="ph ph-camera"></i></span><span id="photoLabel">Photo</span>
+          <input type="file" accept="image/*" style="display:none" onchange="addIncidentFile(this,'photo')" />
+        </label>
+        <label class="incident-upload-btn">
+          <span class="icon"><i class="ph ph-video-camera"></i></span><span id="videoLabel">Video</span>
+          <input type="file" accept="video/*" style="display:none" onchange="addIncidentFile(this,'video')" />
+        </label>
+        <label class="incident-upload-btn">
+          <span class="icon"><i class="ph ph-file-text"></i></span><span id="docLabel">Doc</span>
+          <input type="file" accept=".pdf,.doc,.docx" style="display:none" onchange="addIncidentFile(this,'doc')" />
+        </label>
+      </div>
+
+      <div class="file-chips" id="incidentFileChips"></div>
     </div>
 
-
-
-    <textarea id="complaintText" rows="4" placeholder="Describe what is happening, address, any injuries…"></textarea>
-
-    <div class="incident-upload-row">
-      <label class="incident-upload-btn">
-        <span class="icon"><i class="ph ph-camera"></i></span><span id="photoLabel">Photo</span>
-        <input type="file" accept="image/*" style="display:none" onchange="addIncidentFile(this,'photo')" />
-      </label>
-      <label class="incident-upload-btn">
-        <span class="icon"><i class="ph ph-video-camera"></i></span><span id="videoLabel">Video</span>
-        <input type="file" accept="video/*" style="display:none" onchange="addIncidentFile(this,'video')" />
-      </label>
-      <label class="incident-upload-btn">
-        <span class="icon"><i class="ph ph-file-text"></i></span><span id="docLabel">Doc</span>
-        <input type="file" accept=".pdf,.doc,.docx" style="display:none" onchange="addIncidentFile(this,'doc')" />
-      </label>
+    <div class="modal-footer">
+      <button class="submit-btn" id="incidentSubmitBtn" onclick="submitIncident()">Submit Report</button>
     </div>
-
-    <div class="file-chips" id="incidentFileChips"></div>
-
-    <button class="submit-btn" id="incidentSubmitBtn" onclick="submitIncident()">Submit Report</button>
   </div>
 </div>
 
@@ -2419,6 +2430,10 @@ const HUMAN_RIGHTS = [
   { category:"National", categoryF:"National", type:"Protection NGO", typeF:"ONG Protection", name:"Défenseurs Sans Frontières (DSF-Cameroun)", nameF:"DSF-Cameroun", address:"Bafoussam / Yaoundé", phones:["+237 670 12 34 56"], email:"", website:"", summary:"Cameroon-based organisation providing protection, legal support, and relocation assistance to human rights defenders facing threats, harassment, or persecution.", summaryF:"Organisation basée au Cameroun offrant protection, soutien juridique et assistance de relocalisation aux défenseurs des droits de l'homme menacés ou persécutés." },
   { category:"National", categoryF:"National", type:"Women's Rights NGO", typeF:"ONG Droits des Femmes", name:"Association des Femmes Juristes du Cameroun (AFJC)", nameF:"AFJC", address:"Yaoundé", phones:["+237 222 22 67 31"], email:"", website:"", summary:"Network of women lawyers in Cameroon providing free legal aid to vulnerable women, raising awareness of women's legal rights, and lobbying for gender-responsive legislation.", summaryF:"Réseau d'avocates camerounaises offrant une aide juridique gratuite aux femmes vulnérables et plaidant pour une législation tenant compte du genre." },
   { category:"National", categoryF:"National", type:"Advocacy Committee", typeF:"Comité de Plaidoyer", name:"Comité de Lutte contre l'Impunité et les Violations des Droits de l'Homme (CLI)", nameF:"CLI Cameroun", address:"Douala", phones:["+237 695 77 20 11"], email:"", website:"", summary:"Advocacy committee focused on fighting impunity for human rights violations in Cameroon, monitoring judicial accountability, and supporting victims of state abuse.", summaryF:"Comité de plaidoyer axé sur la lutte contre l'impunité des violations des droits de l'homme au Cameroun et le soutien aux victimes d'abus d'État." },
+  { category:"South West Region", categoryF:"Région du Sud-Ouest", type:"Child Protection NGO", typeF:"ONG Protection de l'Enfance", name:"Children Empowerment Network for Sustainable Development (Child4SDG) — Children Safe Space", nameF:"Child4SDG — Espace Sûr pour Enfants", address:"Buea, South West Region", phones:["+237 679 81 44 42","+237 653 47 59 26"], email:"child4sdg@gmail.com", website:"", summary:"Youth-led NGO running mentorship and psychological support programs for vulnerable children, school activities and skills development, and awareness campaigns to protect street children and other vulnerable groups in Buea. Reachable on Instagram, X, and Facebook as @child4sdg.", summaryF:"ONG dirigée par des jeunes menant des programmes de mentorat et de soutien psychologique pour les enfants vulnérables, des activités scolaires et de développement de compétences, ainsi que des campagnes de sensibilisation pour protéger les enfants de la rue à Buea. Joignable sur Instagram, X et Facebook via @child4sdg." },
+  { category:"South West Region", categoryF:"Région du Sud-Ouest", type:"Human Rights & Gender NGO", typeF:"ONG Droits Humains & Genre", name:"Community Hub for Inclusive Development (CHID)", nameF:"CHID — Pôle Communautaire pour le Développement Inclusif", address:"Buea, South West Region", phones:["+237 233 32 20 53","+237 672 08 93 68","+237 621 90 26 36"], email:"info@commuidev.org", website:"https://commuidev.org", summary:"Youth and women-led NGO founded in 2021 in Buea advancing social justice, human rights, and inclusive development in conflict and post-conflict contexts, with a focus on gender equality, women's empowerment, human rights and governance, and community livelihood support.", summaryF:"ONG dirigée par des jeunes et des femmes, fondée en 2021 à Buea, faisant progresser la justice sociale, les droits humains et le développement inclusif dans les contextes de conflit et post-conflit, avec un accent sur l'égalité des genres, l'autonomisation des femmes et la gouvernance des droits humains." },
+  { category:"Far North Region", categoryF:"Région de l'Extrême-Nord", type:"Islamic Charity / Social Welfare NGO", typeF:"ONG Caritative Islamique / Aide Sociale", name:"L'Association Islamic Charity Foundation for Education and Social Welfare (ICFESW)", nameF:"ICFESW", address:"Maroua, B.P. 534, Far North Region", phones:["+237 694 32 46 28","+237 696 96 02 75","+237 657 89 43 69","+237 695 08 51 87"], email:"icfeswofficiel@gmail.com", website:"https://www.icfesw.cm", summary:"Islamic charity founded in October 2018 in Maroua running an integrated programme (2026–2030) for education, training, social inclusion and welfare of vulnerable children, youth, women and families across Cameroon's 10 regions, covering community health, humanitarian assistance, volunteering, protection of women and children, education, and socioeconomic integration.", summaryF:"Fondation caritative islamique créée en octobre 2018 à Maroua, menant un programme intégré (2026–2030) d'éducation, de formation, d'inclusion sociale et de bien-être pour les enfants, jeunes, femmes et familles vulnérables dans les 10 régions du Cameroun, couvrant la santé communautaire, l'aide humanitaire, le volontariat, la protection des femmes et des enfants, l'éducation et l'intégration socioéconomique." },
+  { category:"South West Region", categoryF:"Région du Sud-Ouest", type:"Youth-Led Health NGO", typeF:"ONG Jeunesse & Santé", name:"Make Them Smile Foundation Cameroon", nameF:"Make Them Smile Foundation Cameroon", address:"Kumba / Buea, South West Region", phones:["+237 653 77 24 43"], email:"", website:"", summary:"Legalized youth-led organisation founded in April 2022 promoting health through sensitization, cleanup campaigns, free screenings, and skills workshops for youth, IDPs, and orphans — including orphanage outreach, malaria and cholera sensitization, blood drives, and menstrual hygiene campaigns across Kumba and Buea. Reachable by direct call and WhatsApp.", summaryF:"Organisation légalisée dirigée par des jeunes, fondée en avril 2022, promouvant la santé par la sensibilisation, des campagnes de nettoyage, des dépistages gratuits et des ateliers de compétences pour les jeunes, les déplacés internes et les orphelins — incluant des actions en orphelinat, des sensibilisations contre le paludisme et le choléra, des collectes de sang et des campagnes d'hygiène menstruelle à Kumba et Buea. Joignable par appel direct et WhatsApp." },
 ];
 
 // ── Counselors — Marriage, Civil Status, Mental Health, Family Mediation
@@ -5724,6 +5739,10 @@ function renderApp() {
   }
   if (document.getElementById('drawer-howtodo-label')) document.getElementById('drawer-howtodo-label').textContent = t ? 'Comment Faire' : 'How To Do';
   if (document.getElementById('howToDoTitle')) { document.getElementById('howToDoTitle').textContent = '📋 ' + (t ? 'Comment Faire' : 'How To Do'); document.getElementById('howToDoSub').textContent = t ? 'Guides étape par étape pour vos démarches administratives au Cameroun.' : 'Step-by-step guides for official documents in Cameroon — what you need, where to go, and how long it takes.'; }
+  if (document.getElementById('howToDoSearch')) document.getElementById('howToDoSearch').placeholder = t ? "Rechercher un document, mot-clé..." : "Search by document, keyword...";
+  if (document.getElementById('howToDoOverlay') && document.getElementById('howToDoOverlay').classList.contains('open')) {
+    renderHowToDoList(document.getElementById('howToDoSearch').value);
+  }
   // Human Rights modal
   if (document.getElementById('humanRightsTitle')) {
     document.getElementById('humanRightsTitle').innerHTML = '✊🏾 ' + (t ? "ONG des Droits de l'Homme" : "Human Rights Orgs");
@@ -6048,12 +6067,13 @@ function cropZoomStep(dir) {
       <div class="modal-handle"></div>
       <h2 id="howToDoTitle">📋 How To Do</h2>
       <p class="modal-sub" id="howToDoSub">Step-by-step guides for official documents in Cameroon — what you need, where to go, and how long it takes.</p>
-      <!-- Document selector pills -->
-      <div id="howToDoMenu" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
+      <input class="form-input" id="howToDoSearch"
+        placeholder="Search by document, keyword..."
+        oninput="renderHowToDoList(this.value)"
+        style="margin-bottom:10px"/>
     </div>
     <div class="modal-body">
-      <!-- Detail panel -->
-      <div id="howToDoDetail" style="padding-bottom:8px"></div>
+      <div id="howToDoList" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;padding-right:2px;padding-bottom:8px"></div>
     </div>
     <div class="modal-footer">
       <button class="cancel-btn" id="howToDoCloseBtn" onclick="closeHowToDo()">Close</button>
@@ -6069,6 +6089,7 @@ const HOW_TO_DO = [
   {
     id: "id_card",
     icon: "ph-identification-card",
+    emoji: "🪪",
     title: "National ID Card",
     titleF: "Carte Nationale d'Identité",
     cases: [
@@ -6151,6 +6172,7 @@ const HOW_TO_DO = [
   {
     id: "birth_cert",
     icon: "ph-baby",
+    emoji: "👶",
     title: "Birth Certificate",
     titleF: "Acte de Naissance",
     cases: [
@@ -6205,6 +6227,7 @@ const HOW_TO_DO = [
   {
     id: "passport",
     icon: "ph-book-open",
+    emoji: "📘",
     title: "Passport",
     titleF: "Passeport",
     cases: [
@@ -6265,6 +6288,7 @@ const HOW_TO_DO = [
   {
     id: "drivers_license",
     icon: "ph-steering-wheel",
+    emoji: "🚗",
     title: "Driver's License",
     titleF: 'Permis de Conduire',
     cases: [
@@ -6299,6 +6323,7 @@ const HOW_TO_DO = [
   {
     id: 'marriage_cert',
     icon: 'ph-heart',
+    emoji: '💍',
     title: 'Marriage Certificate',
     titleF: 'Acte de Mariage',
     cases: [
@@ -6335,6 +6360,7 @@ const HOW_TO_DO = [
   {
     id: "land_cert",
     icon: "ph-map-trifold",
+    emoji: "🗺️",
     title: "Land Certificate",
     titleF: "Titre Foncier",
     cases: [
@@ -6369,6 +6395,7 @@ const HOW_TO_DO = [
   {
     id: "naturalization",
     icon: "ph-flag",
+    emoji: "🏳️",
     title: "Naturalization",
     titleF: "Naturalisation",
     cases: [
@@ -6854,105 +6881,147 @@ function toggleDuty(idx) {
 // ─────────────────────────────────────────────
 // HOW TO DO — UI
 // ─────────────────────────────────────────────
-var _htd = { docIdx: 0, caseIdx: 0 };
+var _htd = { openIdx: null, caseIdx: {} };
 
 function openHowToDo() {
-  _htd.docIdx = 0; _htd.caseIdx = 0;
-  renderHowToDoMenu();
-  renderHowToDoDetail();
+  _htd.openIdx = null; _htd.caseIdx = {};
+  document.getElementById('howToDoSearch').value = '';
+  renderHowToDoList('');
   openOverlay('howToDoOverlay');
 }
 function closeHowToDo(evt) { closeOverlay('howToDoOverlay', evt); }
 
-function renderHowToDoMenu() {
-  const t = state.lang === 'FR';
-  const menu = document.getElementById('howToDoMenu');
-  menu.innerHTML = HOW_TO_DO.map((d, i) => {
-    const active = i === _htd.docIdx;
-    return `<button onclick="selectHtdDoc(${i})" style="
-      display:flex;align-items:center;gap:6px;padding:8px 12px;
-      border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;
-      border:1.5px solid ${active ? '#0A3D2B' : '#D6E5D8'};
-      background:${active ? '#0A3D2B' : '#fff'};
-      color:${active ? '#fff' : '#0A3D2B'};
-      white-space:nowrap;
-    "><i class="ph ${d.icon}"></i> ${t ? d.titleF : d.title}</button>`;
+function htdSearchText(d) {
+  var parts = [d.title, d.titleF];
+  (d.cases || []).forEach(function(c) {
+    parts.push(c.label, c.labelF, c.office, (c.docs || []).join(' '), (c.docsF || []).join(' '));
+  });
+  return parts.join(' ').toLowerCase();
+}
+
+function renderHowToDoList(query) {
+  var t = state.lang === 'FR';
+  var list = document.getElementById('howToDoList');
+  var q = (query || '').trim().toLowerCase();
+  var items = HOW_TO_DO;
+  if (q) {
+    items = HOW_TO_DO.filter(function(d) { return htdSearchText(d).indexOf(q) !== -1; });
+  }
+
+  if (items.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:#5A7060;text-align:center;padding:16px 0">' +
+      (t ? 'Aucun document trouvé.' : 'No document found. Try a different keyword.') + '</p>';
+    return;
+  }
+
+  list.innerHTML = items.map(function(d) {
+    var idx = HOW_TO_DO.indexOf(d);
+    var isOpen = _htd.openIdx === idx;
+    var title = t ? d.titleF : d.title;
+    var caseCount = d.cases.length;
+    var caseSummary = caseCount > 1
+      ? (t ? caseCount + ' parcours disponibles' : caseCount + ' guides available')
+      : (t ? 'Guide étape par étape' : 'Step-by-step guide');
+
+    var expanded = '';
+    if (isOpen) {
+      expanded = '<div style="border-top:1px solid #D6E5D8;padding:14px;background:#f4f8f5">' + renderHowToDoDetailHtml(idx) + '</div>';
+    }
+
+    return '<div style="background:#f8fbf9;border:1px solid #D6E5D8;border-radius:14px;width:100%">' +
+      '<div onclick="toggleHtdDoc(' + idx + ')" style="padding:14px;cursor:pointer">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between">' +
+          '<div style="flex:1;display:flex;align-items:center;gap:10px">' +
+            '<span style="width:32px;height:32px;border-radius:9px;background:#0A3D2B;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + (d.emoji || '📄') + '</span>' +
+            '<div>' +
+              '<div style="font-size:14px;font-weight:700;color:#0A3D2B;margin-bottom:2px">' + escapeHtml(title) + '</div>' +
+              '<div style="font-size:12px;color:#5A7060">' + caseSummary + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:18px;font-weight:700;color:#5A7060;margin-left:8px;flex-shrink:0">' + (isOpen ? '−' : '+') + '</div>' +
+        '</div>' +
+      '</div>' +
+      expanded +
+    '</div>';
   }).join('');
 }
 
-function selectHtdDoc(idx) {
-  _htd.docIdx = idx; _htd.caseIdx = 0;
-  renderHowToDoMenu();
-  renderHowToDoDetail();
+function toggleHtdDoc(idx) {
+  _htd.openIdx = (_htd.openIdx === idx) ? null : idx;
+  if (_htd.caseIdx[idx] === undefined) _htd.caseIdx[idx] = 0;
+  renderHowToDoList(document.getElementById('howToDoSearch').value);
 }
 
-function selectHtdCase(idx) {
-  _htd.caseIdx = idx;
-  renderHowToDoDetail();
+function selectHtdCase(idx, caseIdx) {
+  _htd.caseIdx[idx] = caseIdx;
+  renderHowToDoList(document.getElementById('howToDoSearch').value);
 }
 
-function renderHowToDoDetail() {
-  const t = state.lang === 'FR';
-  const doc = HOW_TO_DO[_htd.docIdx];
-  const detail = document.getElementById('howToDoDetail');
+function renderHowToDoDetailHtml(idx) {
+  var t = state.lang === 'FR';
+  var doc = HOW_TO_DO[idx];
+  var caseIdx = _htd.caseIdx[idx] || 0;
 
   // Case tabs (if more than one)
-  let caseTabs = '';
+  var caseTabs = '';
   if (doc.cases.length > 1) {
-    caseTabs = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">` +
-      doc.cases.map((c, i) => {
-        const active = i === _htd.caseIdx;
-        return `<button onclick="selectHtdCase(${i})" style="
-          padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;
-          border:1.5px solid ${active ? '#C8A84B' : '#D6E5D8'};
-          background:${active ? '#C8A84B' : '#f8fbf9'};
-          color:${active ? '#0A3D2B' : '#5A7060'};
-        ">${t ? c.labelF : c.label}</button>`;
-      }).join('') + `</div>`;
+    caseTabs = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">' +
+      doc.cases.map(function(c, i) {
+        var active = i === caseIdx;
+        return '<button onclick="event.stopPropagation();selectHtdCase(' + idx + ',' + i + ')" style="' +
+          'padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;' +
+          'border:1.5px solid ' + (active ? '#C8A84B' : '#D6E5D8') + ';' +
+          'background:' + (active ? '#C8A84B' : '#f8fbf9') + ';' +
+          'color:' + (active ? '#0A3D2B' : '#5A7060') + ';' +
+          '">' + (t ? c.labelF : c.label) + '</button>';
+      }).join('') + '</div>';
   }
 
-  const c = doc.cases[_htd.caseIdx];
-  const steps = t ? c.stepsF : c.steps;
-  const docs = t ? c.docsF : c.docs;
-  const duration = t ? c.durationF : c.duration;
+  var c = doc.cases[caseIdx];
+  var steps = t ? c.stepsF : c.steps;
+  var docs = t ? c.docsF : c.docs;
+  var duration = t ? c.durationF : c.duration;
 
-  const stepsHtml = steps.map((s, i) => `
-    <div style="display:flex;gap:12px;margin-bottom:12px">
-      <div style="width:24px;height:24px;border-radius:50%;background:#0A3D2B;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div>
-      <div style="font-size:13px;color:#0D1F17;line-height:1.6;flex:1">${escapeHtml(s)}</div>
-    </div>`).join('');
+  var stepsHtml = steps.map(function(s, i) {
+    return '<div style="display:flex;gap:12px;margin-bottom:12px">' +
+      '<div style="width:24px;height:24px;border-radius:50%;background:#0A3D2B;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
+      '<div style="font-size:13px;color:#0D1F17;line-height:1.6;flex:1">' + escapeHtml(s) + '</div>' +
+    '</div>';
+  }).join('');
 
-  const docsHtml = docs.map(d => `
-    <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #D6E5D8">
-      <i class="ph ph-check-circle" style="color:#1A6B47;font-size:16px;flex-shrink:0;margin-top:1px"></i>
-      <span style="font-size:13px;color:#0D1F17">${escapeHtml(d)}</span>
-    </div>`).join('');
+  var docsHtml = docs.map(function(d) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #D6E5D8">' +
+      '<i class="ph ph-check-circle" style="color:#1A6B47;font-size:16px;flex-shrink:0;margin-top:1px"></i>' +
+      '<span style="font-size:13px;color:#0D1F17">' + escapeHtml(d) + '</span>' +
+    '</div>';
+  }).join('');
 
-  detail.innerHTML = `
-    ${caseTabs}
-    <div style="background:#f8fbf9;border:1px solid #D6E5D8;border-radius:14px;padding:14px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">
-        <i class="ph ph-steps"></i> ${t ? 'ÉTAPES' : 'STEPS'}
-      </div>
-      ${stepsHtml}
-    </div>
-    <div style="background:#eff8f3;border:1px solid #c3dfc9;border-radius:14px;padding:14px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:#0A3D2B;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">
-        <i class="ph ph-folder-open"></i> ${t ? 'DOCUMENTS REQUIS' : 'REQUIRED DOCUMENTS'}
-      </div>
-      ${docsHtml}
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:6px">
-      <div style="flex:1;background:#fff8e7;border:1px solid #e8d28a;border-radius:12px;padding:12px">
-        <div style="font-size:10px;font-weight:700;color:#B8860B;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i class="ph ph-buildings"></i> ${t ? 'OFFICE' : 'OFFICE'}</div>
-        <div style="font-size:12px;font-weight:600;color:#0D1F17">${escapeHtml(c.office)}</div>
-      </div>
-      <div style="flex:1;background:#fff8e7;border:1px solid #e8d28a;border-radius:12px;padding:12px">
-        <div style="font-size:10px;font-weight:700;color:#B8860B;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i class="ph ph-clock"></i> ${t ? 'DURÉE' : 'DURATION'}</div>
-        <div style="font-size:12px;font-weight:600;color:#0D1F17">${escapeHtml(duration)}</div>
-      </div>
-    </div>
-  `;
+  return '' +
+    '<div onclick="event.stopPropagation()">' +
+    caseTabs +
+    '<div style="background:#fff;border:1px solid #D6E5D8;border-radius:14px;padding:14px;margin-bottom:14px">' +
+      '<div style="font-size:10px;font-weight:700;color:#5A7060;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">' +
+        '<i class="ph ph-steps"></i> ' + (t ? 'ÉTAPES' : 'STEPS') +
+      '</div>' +
+      stepsHtml +
+    '</div>' +
+    '<div style="background:#eff8f3;border:1px solid #c3dfc9;border-radius:14px;padding:14px;margin-bottom:14px">' +
+      '<div style="font-size:10px;font-weight:700;color:#0A3D2B;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">' +
+        '<i class="ph ph-folder-open"></i> ' + (t ? 'DOCUMENTS REQUIS' : 'REQUIRED DOCUMENTS') +
+      '</div>' +
+      docsHtml +
+    '</div>' +
+    '<div style="display:flex;gap:8px;margin-bottom:6px">' +
+      '<div style="flex:1;background:#fff8e7;border:1px solid #e8d28a;border-radius:12px;padding:12px">' +
+        '<div style="font-size:10px;font-weight:700;color:#B8860B;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i class="ph ph-buildings"></i> ' + (t ? 'OFFICE' : 'OFFICE') + '</div>' +
+        '<div style="font-size:12px;font-weight:600;color:#0D1F17">' + escapeHtml(c.office) + '</div>' +
+      '</div>' +
+      '<div style="flex:1;background:#fff8e7;border:1px solid #e8d28a;border-radius:12px;padding:12px">' +
+        '<div style="font-size:10px;font-weight:700;color:#B8860B;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i class="ph ph-clock"></i> ' + (t ? 'DURÉE' : 'DURATION') + '</div>' +
+        '<div style="font-size:12px;font-weight:600;color:#0D1F17">' + escapeHtml(duration) + '</div>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
 }
 </script>
 
