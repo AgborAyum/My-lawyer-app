@@ -694,10 +694,6 @@ button, input, textarea, select { font-family: inherit; }
     <span class="icon"><i class="ph ph-siren"></i></span>
     <span class="label" id="navDangerLabel">Danger</span>
   </div>
-  <div class="nav-item" id="nav-categories" onclick="navTo('categories')">
-    <span class="icon"><i class="ph ph-clipboard-text"></i></span>
-    <span class="label" id="navCategoriesLabel">Categories</span>
-  </div>
   <div class="nav-item" id="nav-services" onclick="navTo('services')">
     <span class="icon"><i class="ph ph-bank"></i></span>
     <span class="label" id="navServicesLabel">Services</span>
@@ -1281,10 +1277,6 @@ button, input, textarea, select { font-family: inherit; }
       <span class="label" id="drawer-danger-label">Danger / SOS</span>
       <span class="badge">LIVE</span>
     </div>
-    <div class="drawer-item" onclick="toggleDrawer();navTo('categories')">
-      <span class="icon"><i class="ph ph-clipboard-text"></i></span>
-      <span class="label" id="drawer-categories-label">Categories</span>
-    </div>
     <div class="drawer-item" onclick="toggleDrawer();openPenalCode()">
       <span class="icon"><i class="ph ph-book-open"></i></span>
       <span class="label" id="drawer-penalcode-label">Penal Code</span>
@@ -1313,9 +1305,6 @@ button, input, textarea, select { font-family: inherit; }
       <span class="icon"><i class="ph ph-user-circle" id="drawerUserIcon"></i></span>
       <span class="label" id="drawer-signup-label">Sign Up / Login</span>
     </div>
-  </div>
-  <div class="drawer-bottom">
-    <button class="drawer-signup-btn" onclick="toggleDrawer();openAccountOrSignup()" id="drawerSignupBtn">Sign Up — It's Free</button>
   </div>
 </div>
 
@@ -4111,7 +4100,6 @@ function navTo(section) {
   if (navEl) navEl.classList.add('active');
 
   if (section === 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
-  else if (section === 'categories') document.getElementById('section-categories').scrollIntoView({ behavior: 'smooth' });
   else if (section === 'services') document.getElementById('section-services').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -5564,7 +5552,6 @@ function renderApp() {
   // Bottom nav
   document.getElementById('navHomeLabel').textContent = t ? "Accueil" : "Home";
   document.getElementById('navDangerLabel').textContent = t ? "Danger" : "Danger";
-  document.getElementById('navCategoriesLabel').textContent = t ? "Catégories" : "Categories";
   document.getElementById('navServicesLabel').textContent = "Services";
   // Update nav label respecting login state
   if (typeof setLoggedIn === 'function') setLoggedIn(isLoggedIn);
@@ -5665,7 +5652,6 @@ function renderApp() {
   document.getElementById('drawerTag').textContent = t ? "Aide Juridique · Cameroun 🇨🇲" : "Legal Aid & Safety · Cameroon 🇨🇲";
   document.getElementById('drawer-danger-label').textContent = t ? "Danger / SOS" : "Danger / SOS";
   document.getElementById('navbarDangerLabel').textContent = t ? "DANGER" : "DANGER";
-  document.getElementById('drawer-categories-label').textContent = t ? "Catégories" : "Categories";
   document.getElementById('drawer-penalcode-label').textContent = t ? "Code Pénal" : "Penal Code";
   document.getElementById('drawer-gov-label').textContent = t ? "Vos Droits" : "Your Rights";
   if (document.getElementById('yourRightsTitle')) {
@@ -5759,7 +5745,6 @@ function renderApp() {
   }
   document.getElementById('drawer-counselors-label').textContent = t ? "Conseillers" : "Counselors";
   document.getElementById('drawer-signup-label').textContent = t ? "Inscription / Connexion" : "Sign Up / Login";
-  document.getElementById('drawerSignupBtn').textContent = t ? "S'inscrire — C'est Gratuit" : "Sign Up — It's Free";
 
   // Re-render dynamic content
   renderCategories();
