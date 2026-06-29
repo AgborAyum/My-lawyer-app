@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="color-scheme: light only">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -40,10 +40,26 @@ html, body {
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: var(--off-white);
-  color: var(--text);
+  background-color: var(--off-white) !important;
+  color: var(--text) !important;
   min-height: 100vh;
   position: relative;
+}
+
+/* Reinforce explicit colors against Samsung/Chromium auto-dark heuristics,
+   which target large flat near-white backgrounds specifically. */
+.section {
+  background-color: var(--off-white);
+}
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #F5F2EA !important;
+    color: #0D1F17 !important;
+  }
+  .section {
+    background-color: #F5F2EA !important;
+    color: #0D1F17 !important;
+  }
 }
 
 /* On wider screens, frame the app like a phone, centered */
