@@ -944,10 +944,6 @@ button, input, textarea, select { font-family: inherit; }
           <span style="font-size:13px;color:var(--muted)" id="accountRegionLabel">Region</span>
           <span style="font-size:13px;font-weight:600;color:var(--text)" id="accountRegionVal">—</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:13px;color:var(--muted)" id="accountIdLabel">ID Type</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text)" id="accountIdVal">—</span>
-        </div>
         <div style="display:flex;justify-content:space-between;padding:7px 0">
           <span style="font-size:13px;color:var(--muted)" id="accountEmgLabel">Emergency Contacts</span>
           <span style="font-size:13px;font-weight:600;color:var(--green)" id="accountEmgVal">0</span>
@@ -994,20 +990,6 @@ button, input, textarea, select { font-family: inherit; }
       <div class="form-group">
         <label class="form-label" id="dobLabel">Date of Birth</label>
         <input class="form-input" id="profileDob" type="date" />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" id="idTypeLabel">ID Type</label>
-        <div class="toggle-btn-row">
-          <button type="button" class="toggle-btn active" id="idType_NationalID" onclick="setProfileIdType('National ID')">🪪 ID</button>
-          <button type="button" class="toggle-btn" id="idType_Passport" onclick="setProfileIdType('Passport')">📕 Passport</button>
-          <button type="button" class="toggle-btn" id="idType_DriversLicence" onclick="setProfileIdType(&#39;Driver&#39;s Licence&#39;)">🚗 Licence</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" id="idNumberLabel">ID Number</label>
-        <input class="form-input" id="idNumberInput" type="text" placeholder="Enter your National ID number" />
       </div>
 
       <div class="form-group">
@@ -1374,6 +1356,7 @@ const CATEGORIES = [
   { id:"rights",   icon:"✊🏾", name:"Human Rights",       nameF:"Droits de l'Homme",   unit:"CNDHL / REDHAC" },
   { id:"accident", icon:"🚗", name:"Road Accident",      nameF:"Accident de Route",   unit:"Gendarmerie Nationale" },
   { id:"drugs",    icon:"💊", name:"Drug Abuse",         nameF:"Abus de Drogues",     unit:"DGSN / MINSANTE" },
+  { id:"missingdoc", icon:"📄", name:"Missing Document", nameF:"Document Perdu",      unit:"Police / Mairie" },
   { id:"other",    icon:"⚠", name:"Other",             nameF:"Autre",               unit:"Autorités Compétentes" },
 ];
 
@@ -4252,6 +4235,11 @@ function openIncident(cat) {
     document.getElementById('nearestUnitName').textContent = (t ? 'Hôpital de Référence / Urgences' : 'Reference Hospital / Emergency') + ' — Yaoundé Centre';
     document.getElementById('unitCallBtn').innerHTML = '<i class="ph ph-phone"></i> +237 222 23 10 09';
     document.getElementById('unitEmailBtn').textContent = '✉ ' + (t ? 'Envoyer Email' : 'Email Unit');
+  } else if (cat.id === 'missingdoc') {
+    nearestBox.style.display = 'block';
+    document.getElementById('nearestUnitName').textContent = (t ? 'Commissariat / Mairie' : 'Police Station / Town Hall') + ' — Yaoundé Centre';
+    document.getElementById('unitCallBtn').innerHTML = '<i class="ph ph-phone"></i> +237 222 22 15 80';
+    document.getElementById('unitEmailBtn').textContent = '✉ ' + (t ? 'Envoyer Email' : 'Email Unit');
   } else {
     nearestBox.style.display = 'block';
     document.getElementById('nearestUnitName').textContent = cat.unit + " — Yaoundé Centre";
@@ -4260,9 +4248,11 @@ function openIncident(cat) {
   }
 
   document.getElementById('complaintText').value = '';
-  document.getElementById('complaintText').placeholder = t
-    ? "Décrivez ce qui se passe, l'adresse, les blessures…"
-    : "Describe what is happening, address, any injuries…";
+  document.getElementById('complaintText').placeholder = cat.id === 'missingdoc'
+    ? (t ? "Décrivez le document perdu (CNI, permis, acte de naissance…), date/lieu de perte, numéro si connu…"
+         : "Describe the missing document (ID card, licence, birth cert…), date/place lost, number if known…")
+    : (t ? "Décrivez ce qui se passe, l'adresse, les blessures…"
+         : "Describe what is happening, address, any injuries…");
   document.getElementById('incidentFileChips').innerHTML = '';
   document.getElementById('incidentSubmitBtn').textContent = t ? "Soumettre le Signalement" : "Submit Report";
 
@@ -4617,21 +4607,6 @@ function submitSignup() {
 // ─────────────────────────────────────────────
 // PROFILE MODAL
 // ─────────────────────────────────────────────
-let profileIdType = 'National ID';
-
-function setProfileIdType(type) {
-  profileIdType = type;
-  document.querySelectorAll('.id-type-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('idType_' + type.replace(/[^a-zA-Z]/g, '')).classList.add('active');
-  const t = state.lang === 'FR';
-  const labels = ID_LABELS[type];
-  document.getElementById('idNumberLabel').textContent = t
-    ? (type === 'National ID' ? "Numéro de CNI" : type === 'Passport' ? "Numéro de Passeport" : "Numéro de Permis")
-    : labels[0];
-  document.getElementById('idNumberInput').placeholder = t
-    ? (type === 'National ID' ? "Entrez votre numéro de CNI" : type === 'Passport' ? "Entrez votre numéro de passeport" : "Entrez votre numéro de permis")
-    : labels[1];
-}
 
 // ── Profile Picture Pan/Zoom Editor (Facebook-style) ─────────
 var _pic = {
@@ -4861,8 +4836,6 @@ function saveProfile() {
   state.userProfile = Object.assign({}, state.userProfile, {
     fullName: document.getElementById('profileFullName').value,
     dob: document.getElementById('profileDob').value,
-    idType: profileIdType,
-    idNumber: document.getElementById('idNumberInput').value,
     region: document.getElementById('profileRegion').value,
     division: document.getElementById('profileDivision').value,
     subdivision: document.getElementById('profileSubdivision').value,
@@ -5610,11 +5583,6 @@ function renderApp() {
   document.getElementById('fullNameLabel').textContent = t ? "Nom complet (tel que sur votre pièce d'identité)" : "Full Name (as on ID Card / Passport)";
   document.getElementById('profileFullName').placeholder = t ? "ex: Jean-Paul Mbarga Nkodo" : "e.g. Jean-Paul Mbarga Nkodo";
   document.getElementById('dobLabel').textContent = t ? "Date de naissance" : "Date of Birth";
-  document.getElementById('idTypeLabel').textContent = t ? "Type de pièce d'identité" : "ID Type";
-  document.getElementById('idType_NationalID').innerHTML = "🪪 " + (t ? "CNI" : "ID");
-  document.getElementById('idType_Passport').innerHTML = "📕 " + (t ? "Passeport" : "Passport");
-  document.getElementById('idType_DriversLicence').innerHTML = "🚗 " + (t ? "Permis" : "Licence");
-  setProfileIdType(profileIdType); // refresh id number label
   document.getElementById('regionLabel').textContent = t ? "Région" : "Region";
   renderRegionOptions('profileRegion');
   document.getElementById('divisionLabel').textContent = t ? "Département" : "Division";
@@ -5844,7 +5812,6 @@ function populateAccountOverlay() {
   document.getElementById('accountContact').textContent = p.phone || p.email || '';
   // Info rows
   document.getElementById('accountRegionVal').textContent = p.region || '—';
-  document.getElementById('accountIdVal').textContent = p.idType || '—';
   document.getElementById('accountEmgVal').textContent = (p.emergencyContacts || []).length;
   // Profile pic
   const circle = document.getElementById('accountPicCircle');
