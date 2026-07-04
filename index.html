@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0A3D2B" />
 <meta name="color-scheme" content="light" />
 <meta name="supported-color-schemes" content="light" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com; img-src 'self' data: blob:; font-src 'self' https://unpkg.com; object-src 'none'; base-uri 'self';" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>MyLawyer – Legal Aid & Safety for Cameroon</title>
@@ -954,6 +955,10 @@ button, input, textarea, select { font-family: inherit; }
       <button class="submit-btn" style="background:var(--green-mid);margin-bottom:10px" onclick="closeAccount();openOverlay('profileOverlay')">
         <i class="ph ph-pencil-simple"></i> <span id="accountEditBtn">Edit Profile</span>
       </button>
+      <button onclick="shareApp()" style="width:100%;background:#fff;color:var(--green);border:1.5px solid var(--green);border-radius:14px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px" id="accountShareBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span id="accountShareLabel">Share MyLawyer</span>
+      </button>
       <button onclick="logoutUser()" style="width:100%;background:#fff;color:var(--red);border:1.5px solid var(--red);border-radius:14px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px">
         <i class="ph ph-sign-out"></i> <span id="accountLogoutBtn">Log Out</span>
       </button>
@@ -1318,6 +1323,8 @@ button, input, textarea, select { font-family: inherit; }
 
 // ── Anthropic Claude API Configuration
 // Replace with your actual API key before deployment
+// ⚠️  SECURITY: This key must NEVER be a real key in client-side code.
+// Before deployment, remove this and route all AI requests through a backend proxy.
 const ANTHROPIC_API_KEY = "YOUR_API_KEY_HERE";
 
 // ── Cameroon Penal Code knowledge base (key sections)
@@ -4738,15 +4745,44 @@ function submitSignup() {
   const t = state.lang === 'FR';
   const pass = document.getElementById('signupPassword').value;
   const confirm = document.getElementById('signupConfirm').value;
-  if (!pass || pass !== confirm) {
+
+  // Password strength: min 8 chars, at least 1 letter and 1 digit
+  if (!pass || pass.length < 8 || !/[A-Za-z]/.test(pass) || !/[0-9]/.test(pass)) {
+    alert(t
+      ? "Le mot de passe doit comporter au moins 8 caractères, une lettre et un chiffre."
+      : "Password must be at least 8 characters and include a letter and a number.");
+    return;
+  }
+  if (pass !== confirm) {
     alert(t ? "Les mots de passe ne correspondent pas." : "Passwords do not match.");
     return;
   }
-  const phone = document.getElementById('signupPhone').value;
-  const email = document.getElementById('signupEmail').value;
+
+  const phone = document.getElementById('signupPhone').value.replace(/\s/g,'');
+  const email = document.getElementById('signupEmail').value.trim();
+
+  // Phone: Cameroon numbers — 9 digits starting with 6, 2, 3
+  if (signupMode === 'phone' && !/^[623]\d{8}$/.test(phone)) {
+    alert(t
+      ? "Numéro invalide. Entrez un numéro camerounais valide (ex: 6XX XXX XXX)."
+      : "Invalid number. Enter a valid Cameroonian number (e.g. 6XX XXX XXX).");
+    return;
+  }
+  // Email: basic format check
+  if (signupMode === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert(t ? "Adresse e-mail invalide." : "Invalid email address.");
+    return;
+  }
 
   state.userProfile.phone = signupMode === 'phone' ? '+237' + phone : '';
   state.userProfile.email = signupMode === 'email' ? email : '';
+  // Save session credentials (in-memory only, never persisted to disk/storage)
+  savedCredentials.contact = state.userProfile.phone || state.userProfile.email;
+  savedCredentials.password = pass;
+  isLoggedIn = true;
+  // Clear password fields from DOM immediately
+  document.getElementById('signupPassword').value = '';
+  document.getElementById('signupConfirm').value = '';
 
   closeOverlay('signupOverlay');
   setTimeout(() => openOverlay('profileOverlay'), 300);
@@ -5880,6 +5916,7 @@ function renderApp() {
   }
   document.getElementById('drawer-counselors-label').textContent = t ? "Conseillers" : "Counselors";
   document.getElementById('drawer-signup-label').textContent = t ? "Inscription / Connexion" : "Sign Up / Login";
+  if (document.getElementById('accountShareLabel')) document.getElementById('accountShareLabel').textContent = t ? "Partager MyLawyer" : "Share MyLawyer";
 
   // Re-render dynamic content
   renderCategories();
@@ -5940,6 +5977,7 @@ function submitLogin() {
     return;
   }
   closeOverlay('loginOverlay');
+  document.getElementById('loginPassword').value = '';
   setLoggedIn(true);
 }
 
@@ -5953,11 +5991,23 @@ function closeAccount(evt) { closeOverlay('accountOverlay', evt); }
 
 function populateAccountOverlay() {
   const p = state.userProfile;
-  // Name
+  const t = state.lang === 'FR';
+  // Name — show fullName, else contact, else generic
   const nameEl = document.getElementById('accountName');
-  nameEl.textContent = p.fullName || (state.lang === 'FR' ? 'Mon Compte' : 'My Account');
-  // Contact
-  document.getElementById('accountContact').textContent = p.phone || p.email || '';
+  const contact = p.phone || p.email || '';
+  nameEl.textContent = p.fullName || contact || (t ? 'Mon Compte' : 'My Account');
+  // Contact — mask phone for privacy, never show raw digits
+  const contactEl = document.getElementById('accountContact');
+  if (p.phone && p.phone.length >= 6) {
+    const raw = p.phone.replace(/\s/g,'');
+    const masked = raw.slice(0, raw.length - 4).replace(/\d(?=\d{2})/g, '•') + raw.slice(-2);
+    contactEl.textContent = masked;
+  } else if (p.email) {
+    const parts = p.email.split('@');
+    contactEl.textContent = parts[0].slice(0,3) + '***@' + parts[1];
+  } else {
+    contactEl.textContent = '';
+  }
   // Info rows
   document.getElementById('accountRegionVal').textContent = p.region || '—';
   document.getElementById('accountEmgVal').textContent = (p.emergencyContacts || []).length;
@@ -5990,10 +6040,7 @@ function setLoggedIn(loggedIn) {
   const drawerBtn = document.getElementById('drawerSignupBtn');
 
   if (loggedIn) {
-    // Save credentials for autofill on re-login
-    savedCredentials.contact = state.userProfile.phone || state.userProfile.email || savedCredentials.contact;
-    savedCredentials.password = state.userProfile._password || savedCredentials.password;
-
+    // Credentials already set in submitSignup/submitLogin — no need to read from profile here
     navIcon.innerHTML = '<i class="ph ph-user-circle"></i>';
     navLabel.textContent = t ? 'Compte' : 'Account';
     if (drawerLabel) drawerLabel.textContent = t ? 'Mon Compte' : 'My Account';
@@ -6007,6 +6054,30 @@ function setLoggedIn(loggedIn) {
 }
 
 // ── LOGOUT ─────────────────────────────────────
+function shareApp() {
+  const t = state.lang === 'FR';
+  const shareData = {
+    title: 'MyLawyer — Legal Aid & Safety · Cameroon',
+    text: t
+      ? 'Découvrez MyLawyer — aide juridique, droits civiques, services d\'urgence et plus pour tous les Camerounais. Gratuit.'
+      : 'Check out MyLawyer — legal aid, civic rights, emergency services and more for every Cameroonian. Free.',
+    url: 'https://my-lawyer-app-gamma.vercel.app'
+  };
+  if (navigator.share) {
+    navigator.share(shareData).catch(function(){});
+  } else {
+    // Fallback: copy link to clipboard
+    navigator.clipboard.writeText(shareData.url).then(function() {
+      const btn = document.getElementById('accountShareBtn');
+      const label = document.getElementById('accountShareLabel');
+      const orig = label.textContent;
+      label.textContent = t ? 'Lien copié ✓' : 'Link copied ✓';
+      btn.style.background = '#f0faf4';
+      setTimeout(function() { label.textContent = orig; btn.style.background = '#fff'; }, 2500);
+    }).catch(function(){});
+  }
+}
+
 function logoutUser() {
   const t = state.lang === 'FR';
   const confirmed = confirm(t
@@ -6018,16 +6089,6 @@ function logoutUser() {
   setLoggedIn(false);
   // Keep savedCredentials so login can autofill them next time
 }
-
-// ── PATCH submitSignup to save password ────────
-const _origSubmitSignup = submitSignup;
-submitSignup = function() {
-  // Capture password before original function closes the modal
-  const pass = document.getElementById('signupPassword').value;
-  _origSubmitSignup();
-  state.userProfile._password = pass;
-  savedCredentials.password = pass;
-};
 
 // ── END ACCOUNT SYSTEM ─────────────────────────
 
