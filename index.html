@@ -345,11 +345,9 @@ button, input, textarea, select { font-family: inherit; }
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
   cursor: pointer; padding: 4px 0; color: #fff;
 }
-.nav-item .icon { font-size: 20px; color: #fff; }
-.nav-item .label {
-  font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
-  color: #fff;
-}
+.nav-item .icon { font-size: 20px; color: #fff; display:flex; align-items:center; justify-content:center; }
+.nav-item .icon svg { width:24px; height:24px; stroke: currentColor; display:block; }
+.nav-item .label { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; }
 .nav-item.active .icon { color: var(--gold); }
 .nav-item.active .label { color: var(--gold); }
 
@@ -707,19 +705,50 @@ button, input, textarea, select { font-family: inherit; }
 <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
 <nav class="bottom-nav">
   <div class="nav-item active" id="nav-home" onclick="navTo('home')">
-    <span class="icon"><i class="ph ph-house"></i></span>
+    <span class="icon">
+      <!-- Home icon -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+        <path d="M9 21V12h6v9"/>
+      </svg>
+    </span>
     <span class="label" id="navHomeLabel">Home</span>
   </div>
   <div class="nav-item" id="nav-danger" onclick="openDanger()">
-    <span class="icon"><i class="ph ph-siren"></i></span>
+    <span class="icon">
+      <!-- Alarm/siren bell icon -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 8a6 6 0 0 1 12 0c0 4 2 6 2 6H4s2-2 2-6"/>
+        <rect x="5" y="17" width="14" height="3" rx="1"/>
+        <path d="M9.5 17a2.5 2.5 0 0 0 5 0"/>
+      </svg>
+    </span>
     <span class="label" id="navDangerLabel">Danger</span>
   </div>
   <div class="nav-item" id="nav-services" onclick="navTo('services')">
-    <span class="icon"><i class="ph ph-bank"></i></span>
+    <span class="icon">
+      <!-- Services list icon -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="7.5" cy="8.5" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="7.5" cy="12" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="7.5" cy="15.5" r="1" fill="currentColor" stroke="none"/>
+        <line x1="10.5" y1="8.5" x2="17" y2="8.5"/>
+        <line x1="10.5" y1="12" x2="17" y2="12"/>
+        <line x1="10.5" y1="15.5" x2="17" y2="15.5"/>
+      </svg>
+    </span>
     <span class="label" id="navServicesLabel">Services</span>
   </div>
   <div class="nav-item" id="nav-signup" onclick="openAccountOrSignup()">
-    <span class="icon" id="navSignupIcon"><i class="ph ph-user-plus"></i></span>
+    <span class="icon" id="navSignupIcon">
+      <!-- Sign up — person with checkmark -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M2 21v-1a7 7 0 0 1 10.7-5.9"/>
+        <polyline points="15 19 17 21 21 17"/>
+      </svg>
+    </span>
     <span class="label" id="navSignupLabel">Sign Up</span>
   </div>
 </nav>
@@ -3417,12 +3446,12 @@ const YOUR_RIGHTS = [
 
 // ── Services Directory
 const SERVICES = [
-  { icon:"bank",      emoji:"🏛️", title:"Government Offices", titleF:"Bureaux Gouvernementaux", desc:"36 ministries — find the right office, their services, and locations.", descF:"36 ministeres — trouvez le bon bureau, ses services et ses emplacements.", action:"openGovOffices" },
-  { icon:"fist",      emoji:"✊🏾",  title:"Human Rights Orgs",  titleF:"ONG des Droits de l'Homme", desc:"22 organisations — CNDHL, CDHC, REDHAC, Amnesty, HRW, LCDH, AFJC, UN bodies and more.", descF:"22 organisations — CNDHL, CDHC, REDHAC, Amnesty, HRW, LCDH, AFJC, organes ONU et plus.", action:"openHumanRights" },
-  { icon:"🌿",      emoji:"🌿", title:"Environment & Land",  titleF:"Environnement & Foncier", desc:"MINFOF, CED, land rights advocacy groups and environmental civil societies.", descF:"MINFOF, CED, groupes de défense des droits fonciers.", action:"openEnvLand" },
-  { icon:"scales",    emoji:"⚖️", title:"Legal Aid Centres",   titleF:"Centres d'Aide Juridique", desc:"47 firms & lawyers across all regions of Cameroon.", descF:"47 cabinets & avocats dans toutes les régions du Cameroun.", action:"openLegalAid" },
-  { icon:"handshake", emoji:"🤝", title:"Counselors",          titleF:"Conseillers", desc:"Marriage & Civil Status Counselors, Mental Health Counselors, Family Mediators.", descF:"Conseillers en mariage, en santé mentale et médiateurs familiaux.", action:"openCounselors" },
-  { icon:"hospital",  emoji:"🏥", title:"Health Facilities",    titleF:"Établissements de Santé", desc:"Hospitals, clinics & health centres across all regions of Cameroon — search by name, location or service.", descF:"Hôpitaux, cliniques et centres de santé dans toutes les régions — recherchez par nom, lieu ou service.", action:"openHealthFacilities" },
+  { icon:"bank",      emoji:"🏛️", svg:'<svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="21" width="22" height="2"/><rect x="3" y="7" width="18" height="14"/><rect x="7" y="10" width="3" height="3"/><rect x="11" y="10" width="3" height="3"/><rect x="15" y="10" width="3" height="3"/><rect x="7" y="15" width="3" height="3"/><rect x="11" y="15" width="3" height="3"/><rect x="15" y="15" width="3" height="3"/><polygon points="12,1 2,7 22,7"/></svg>', title:"Government Offices", titleF:"Bureaux Gouvernementaux", desc:"36 ministries — find the right office, their services, and locations.", descF:"36 ministeres — trouvez le bon bureau, ses services et ses emplacements.", action:"openGovOffices" },
+  { icon:"fist",      emoji:"✊🏾",  svg:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V7a1.5 1.5 0 0 1 3 0v4"/><path d="M11 8.5V6a1.5 1.5 0 0 1 3 0v5"/><path d="M14 8V7a1.5 1.5 0 0 1 3 0v5"/><path d="M17 10a1.5 1.5 0 0 1 3 0v3a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-1a1.5 1.5 0 0 1 3 0"/><path d="M5 18l-2 2"/></svg>', title:"Human Rights Orgs",  titleF:"ONG des Droits de l'Homme", desc:"22 organisations — CNDHL, CDHC, REDHAC, Amnesty, HRW, LCDH, AFJC, UN bodies and more.", descF:"22 organisations — CNDHL, CDHC, REDHAC, Amnesty, HRW, LCDH, AFJC, organes ONU et plus.", action:"openHumanRights" },
+  { icon:"🌿",      emoji:"🌿", svg:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="8" r="2.5"/><polyline points="2,20 9,9 14,15 18,10 22,20"/></svg>', title:"Environment & Land",  titleF:"Environnement & Foncier", desc:"MINFOF, CED, land rights advocacy groups and environmental civil societies.", descF:"MINFOF, CED, groupes de défense des droits fonciers.", action:"openEnvLand" },
+  { icon:"scales",    emoji:"⚖️", svg:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="22"/><line x1="2" y1="22" x2="22" y2="22"/><path d="M3 9 L6 3 L9 9 Q9 12 6 12 Q3 12 3 9Z"/><path d="M15 9 L18 3 L21 9 Q21 12 18 12 Q15 12 15 9Z"/></svg>', title:"Legal Aid Centres",   titleF:"Centres d'Aide Juridique", desc:"47 firms & lawyers across all regions of Cameroon.", descF:"47 cabinets & avocats dans toutes les régions du Cameroun.", action:"openLegalAid" },
+  { icon:"handshake", emoji:"🤝", svg:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14c0 2-4 6-8 8-4-2-8-6-8-8V10l8-4 8 4v4z"/><path d="M12 10 Q10 8 12 6 Q14 8 12 10z" fill="white" stroke="none"/></svg>', title:"Counselors",          titleF:"Conseillers", desc:"Marriage & Civil Status Counselors, Mental Health Counselors, Family Mediators.", descF:"Conseillers en mariage, en santé mentale et médiateurs familiaux.", action:"openCounselors" },
+  { icon:"hospital",  emoji:"🏥", svg:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>', title:"Health Facilities",    titleF:"Établissements de Santé", desc:"Hospitals, clinics & health centres across all regions of Cameroon — search by name, location or service.", descF:"Hôpitaux, cliniques et centres de santé dans toutes les régions — recherchez par nom, lieu ou service.", action:"openHealthFacilities" },
 ];
 
 // ── ID Type labels (EN)
@@ -5679,7 +5708,7 @@ function renderServices() {
   list.innerHTML = SERVICES.map(function(svc) {
     var onclick = svc.action ? 'onclick="' + svc.action + '()"' : '';
     return '<div class="service-card" ' + onclick + ' style="' + (svc.action ? 'cursor:pointer' : '') + '">' +
-      '<div class="service-icon" style="font-size:22px;color:#fff">' + (svc.emoji || '') + '</div>' +
+      '<div class="service-icon" style="font-size:22px;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;flex-shrink:0">' + (svc.svg || svc.emoji || '') + '</div>' +
       '<div class="service-info">' +
         '<div class="title">' + (t ? svc.titleF : svc.title) + '</div>' +
         '<div class="desc">' + (t ? svc.descF : svc.desc) + '</div>' +
@@ -6041,12 +6070,12 @@ function setLoggedIn(loggedIn) {
 
   if (loggedIn) {
     // Credentials already set in submitSignup/submitLogin — no need to read from profile here
-    navIcon.innerHTML = '<i class="ph ph-user-circle"></i>';
+    navIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/><circle cx="12" cy="8" r="4" fill="currentColor" fill-opacity="0.15"/></svg>';
     navLabel.textContent = t ? 'Compte' : 'Account';
     if (drawerLabel) drawerLabel.textContent = t ? 'Mon Compte' : 'My Account';
     if (drawerBtn) { drawerBtn.textContent = t ? 'Voir Mon Compte' : 'View My Account'; drawerBtn.style.background = 'var(--green-mid)'; }
   } else {
-    navIcon.innerHTML = '<i class="ph ph-user-plus"></i>';
+    navIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0 1 10.7-5.9"/><polyline points="15 19 17 21 21 17"/></svg>';
     navLabel.textContent = t ? 'Inscription' : 'Sign Up';
     if (drawerLabel) drawerLabel.textContent = t ? 'Inscription / Connexion' : 'Sign Up / Login';
     if (drawerBtn) { drawerBtn.textContent = t ? "S'inscrire — C'est Gratuit" : "Sign Up — It's Free"; drawerBtn.style.background = ''; }
